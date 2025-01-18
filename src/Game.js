@@ -2,6 +2,7 @@ import { io } from "socket.io-client";
 import { test } from './test.js';
 import { Joint, SpineBox } from './drawUtils.js';
 import { CharBody } from './charBody.js';
+const rand = Math.random
 
 class Game extends Phaser.Scene {
     constructor() {
@@ -25,6 +26,8 @@ class Game extends Phaser.Scene {
       this.load.image('star', 'assets/star.png');
       this.load.image('bomb', 'assets/bomb.png');
       this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
+      
+      this.load.image('head1', 'assets/head1.png');
     }
   
     create() {
@@ -39,6 +42,26 @@ class Game extends Phaser.Scene {
       this.player.setBounce(0.2);
       this.player.setCollideWorldBounds(true);
   
+      this.testChar = new CharBody(this, {x:100 + 150, y:580}, {
+        height: 150 + rand()*120, // HP, SPD
+        bodyWidth: 30 + rand()*30, // HP, DEF
+        neckBaseRatio: 0.28 + rand()*0.37, // DEF
+        leanForward: rand()**2*20, // ATK
+        neckType: 1, // DEF
+        
+        armLengthRatio: 0.5+rand()*0.2, // SPD
+        armWidthRatio: 0.3 + rand()*0.4, // ATK, DEF
+        weaponGrip: 1, // ATK, SPD
+
+        animSpeed: 0.8 + rand()*0.4,
+
+        weaponType: 1,
+        headType: 1
+    })
+    setInterval(() => this.testChar.frameAdvance(), 16)
+    this.testChar.scale.x = -1
+       
+
       this.anims.create({
         key: 'left',
         frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
@@ -89,11 +112,13 @@ class Game extends Phaser.Scene {
   
      
       if (this.cursors.left.isDown) {
-        this.player.setVelocityX(-160);
+        //this.player.setVelocityX(-160);
+        this.testChar.basePos.x += -2
         this.player.anims.play('left', true);
         this.player.animState = 'left'
       } else if (this.cursors.right.isDown) {
-        this.player.setVelocityX(160);
+        //this.player.setVelocityX(160);
+        this.testChar.basePos.x += 2
         this.player.anims.play('right', true);
         this.player.animState = 'right'
       } else {
@@ -104,6 +129,7 @@ class Game extends Phaser.Scene {
   
       if (this.cursors.up.isDown && this.player.body.touching.down) {
         this.player.setVelocityY(-330);
+        this.testChar.scale.x *= -1
       }
   
       // Emit player position to the server
