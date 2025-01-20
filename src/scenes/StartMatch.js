@@ -130,7 +130,7 @@ export class StartMatch extends Scene {
     const stats = this.add.text(
       80,
       300,
-      "attack=5\n\ndefense=6\n\nhp=25\n\nspeed=7"
+      "attack = 5\n\ndefence = 6\n\nhp = 25\n\nspeed = 7"
     );
   }
   update() {
