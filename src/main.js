@@ -21,6 +21,9 @@ window.addEventListener("DOMContentLoaded", () => {
         debug: false,
       },
     },
+    dom: {
+      createContainer: true
+    }
   };
 
   const game = new Phaser.Game(config);
