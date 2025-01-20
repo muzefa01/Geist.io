@@ -4,6 +4,8 @@ import http from 'http';
 import { Server } from 'socket.io';
 import { fileURLToPath } from 'url';
 
+import { GameState } from './src/gameState.js'
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -26,7 +28,8 @@ function validRoomCode() {
     valid = true
     code = randRoomCode()
     for (let i in games) {
-      if (games[i].room === code) valid = false
+      if (games[i].room === code) 
+        valid = false
     }
   }
   return code
@@ -45,21 +48,18 @@ io.on('connection', (socket) => {
     if (socket.rooms.size === 1) { // each player is in a solo room by default, so allowed to join 1 more
       const roomCode = validRoomCode()
       socket.join(roomCode)
-      games.push({
-        room: roomCode,
-        p: [socket.id] 
-      })
+      games.push(new GameState(roomCode, io.to(roomCode)))
       console.log(`Room ${roomCode} has been created.`)
     }
   })
 
   socket.on('joinRoom', (roomCode) => {
-    if (socket.rooms.size === 1) {
+    if (socket.rooms.size === 1) { // each player is in a solo room by default, so allowed to join 1 more
       for (let i in games) {
         if (games[i].room === roomCode) {
           socket.join(roomCode)
           games[i].p.push(socket.id)
-          console.log(`Room ${roomCode} has been joined.`)
+          console.log(`Room ${roomCode} has been joined by another.`)
         }
       }
     }
