@@ -16,11 +16,17 @@ function vectIntpl(a, b, k) { // vector interpolate
   }
 }
 
+function vectAdd(a, b) {
+  return {x: a.x+b.x, y: a.y+b.y}
+}
+
 class CharBody {
   constructor(owner, basePos, attributes) {
     this.owner = owner
     this.basePos = basePos
     this.frame = 0
+    this.breathOffset = 0
+    this.scale = {x: 1, y: 1}
     
      // tentatively declaring which stats affect each body attribute here
       this.height = attributes.height // HP, SPD
@@ -47,7 +53,7 @@ class CharBody {
       new Joint(this.basePos.x, this.basePos.y, this.baseWidth, 0, -PI/2),
       new Joint(this.basePos.x, this.basePos.y-this.height*0.7, this.neckWidth*0.6 + this.baseWidth*0.4),
       new Joint(this.basePos.x-this.leanForward, this.basePos.y-this.height+0.25*this.leanForward, this.neckWidth)
-    ])
+    ]);
     this.neckPosX = this.torso.joints[2].posX
     this.neckPosY = this.torso.joints[2].posY
 
@@ -87,22 +93,16 @@ class CharBody {
 
     // head
     this.headScale = this.neckWidth/100 + this.bodyWidth/150 + 0.15
-    this.headPos = {
-      x: this.basePos.x
-        -(this.leanForward+5)*(1+this.headScale),
-      y: this.basePos.y
-        -this.height*(1 + this.headScale*0.15)
-        +0.25*this.leanForward*(1+this.headScale)
-        -(8*this.headScale)}
-    this.head = this.owner.add.image(this.headPos.x, this.headPos.y, 'head1');
+    this.head = this.owner.add.image(0, 0, 'head1');
+    this.updateHead()
     this.head.setDepth(5)
     this.head.scale = this.headScale
     this.head.rotation = -0.2
     
     // draw
-    this.torso.draw()
-    this.arms[0].draw()
-    this.arms[1].draw()
+    // this.torso.draw()
+    // this.arms[0].draw()
+    // this.arms[1].draw()
   }
 
   frameAdvance() {
@@ -114,13 +114,13 @@ class CharBody {
     this.armsCentre = vectIntpl(this.torso.joints[1].getPos(), this.torso.joints[2].getPos(), 0.7)
     const side = [-1, 1]
     for (let i in [-1, 1]) {
-      const shoulderX = this.armsCentre.x + side[i]*(5 + this.neckWidth*0.2)
+      const shoulderX = this.armsCentre.x + (side[i]*(5 + this.neckWidth*0.2)) * this.scale.x
       this.arms[i].joints[0].setPos({x: shoulderX, y: this.armsCentre.y})
       this.arms[i].joints[1].setPos({
-        x: shoulderX + Math.cos(this.armsAngle)*this.armLength*0.4, 
+        x: shoulderX + (Math.cos(this.armsAngle)*this.armLength*0.4) * this.scale.x, 
         y: this.armsCentre.y - Math.sin(this.armsAngle)*this.armLength*0.4})
       this.arms[i].joints[2].setPos({
-        x: this.arms[i].joints[1].posX + Math.cos(this.armsAngle - PI/8)*this.armLength*0.6,
+        x: this.arms[i].joints[1].posX + (Math.cos(this.armsAngle - PI/8)*this.armLength*0.6) * this.scale.x,
         y: this.arms[i].joints[1].posY - Math.sin(this.armsAngle - PI/8)*this.armLength*0.6})
       this.arms[i].update()
     }
@@ -132,23 +132,50 @@ class CharBody {
       this.hands[i].fillStyle(0x000000, 1.0);
       this.hands[i].fillCircleShape(new Geom.Circle(...circleParams))
       this.hands[i].strokeCircleShape(new Geom.Circle(...circleParams))
-      this.hands[i].setDepth(i*2)
+      this.hands[i].setDepth(i*3)
     }
   }
 
+  updateHead() {
+    this.head.x = this.basePos.x 
+      +(-(this.leanForward+5)*(1+this.headScale)
+        - this.breathOffset*0.3 ) * this.scale.x
+
+    this.head.y = this.basePos.y
+      -this.height*(1 + this.headScale*0.15)
+      +0.25*this.leanForward*(1+this.headScale)
+      -(8*this.headScale)
+      + this.breathOffset*1;
+    
+    this.head.rotation = Math.sin(this.frame/20 + PI/2) *0.03 - 0.2
+    this.head.scaleX = this.scale.x
+    if (this.scale.x < 0) {
+      this.head.rotation *= -1
+    }
+    this.head.scaleX = this.scale.x * this.headScale
+  }
+
+  updateTorso() {
+    this.torso.joints[0].setPos(this.basePos)
+    this.torso.joints[1].setPos(vectAdd(this.torso.joints[0].getPos(), {
+      x:0, 
+      y: -this.height*0.7
+    }))
+    this.torso.joints[2].setPos(vectAdd(this.torso.joints[0].getPos(), {
+      x: (-this.leanForward - this.breathOffset*0.3) * this.scale.x, 
+      y: -this.height+0.25*this.leanForward + this.breathOffset*0.5
+    }))
+  }
+
   update() {
-    const breathOffset = Math.sin(this.frame/20)*(this.height/150 + 2)
+    this.breathOffset = Math.sin(this.frame/20)*(this.height/150 + 2)
 
-    this.head.y = this.headPos.y + breathOffset
-    this.torso.joints[2].posY = this.neckPosY + breathOffset*0.5
-
-    this.head.x = this.headPos.x - breathOffset*0.3
-    this.torso.joints[2].posX = this.neckPosX - breathOffset*0.3
+    this.updateTorso()
+    this.updateHead()
 
     this.armsAngle = this.armsAngleBase - Math.sin(this.frame/20 + PI/2)*0.02
     this.updateArms()
 
-    this.head.rotation = Math.sin(this.frame/20 + PI/2) *0.03 - 0.2
 
     this.torso.update()
     this.torso.draw()
