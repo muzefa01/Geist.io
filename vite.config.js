@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
 import path from 'path';
 export default defineConfig({
-  
+
   server: {
-    host: true, 
+    host: true,
     port: 3001,
     proxy: {
         '/socket.io': {
@@ -13,17 +13,15 @@ export default defineConfig({
         },
       },
   },
-
-
+  
   build: {
-    outDir: 'dist', 
+    outDir: 'dist',
   },
 
-  
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'), 
-      '@assets': path.resolve(__dirname, './public/assets'), 
+      '@': path.resolve(__dirname, './src'),
+      '@assets': path.resolve(__dirname, './public/assets'),
     },
   },
 });

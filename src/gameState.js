@@ -3,20 +3,24 @@ function randF(max) {return Math.random() * max} // random float
 function coin() {return Math.random() < 0.5} // coin flip
 
 class GameState {
-  constructor(room, io) {
+  constructor(room) {
     this.room = room
-    this.io = io
 
-    this.p = [] // players
+    this.plr = [] // player IDs
     this.phase = 'setup' // setup -> teambuild -> combats -> result?
     this.teams = [[], []]
     this.currentlyOffering = [{}, {}]
+    this.ready = ['none', 'none']
+    this.rerolls[3, 3] // rerolls per player - shared between choosing spirits and upgrades
+
+    this.firstChoice = coin()? '0': '1'
   }
 
   moveToTeambuild() {
-    for (let i in p) {
+    for (let i in plr) {
       currentlyOffering[i] = this.offerSpirit()
     }
+    this.phase = "teambuild"
   }
 
   offerSpirit() {
@@ -30,7 +34,7 @@ class GameState {
       upgrade: "none"
     }
     let karma = 0 // system for slightly smoothing out powerlevel between spirits
-    // higher roll on one stat means 50% change of lower maximum on next
+    // higher roll on one stat means 50% chance of lower maximum on next
 
     let num = rand(4) // spd 8~12
     newSpirit.stats.spd = 8 + num
@@ -48,21 +52,19 @@ class GameState {
     newSpirit.stats.def = 5 + num
 
     newSpirit.attributes = {
-      // height: 150 + rand()*120, // HP, SPD
-      // bodyWidth: 30 + rand()*30, // HP, DEF
-      // neckBaseRatio: 0.28 + rand()*0.37, // DEF
-      // leanForward: rand()**2*20, // ATK
-      // neckType: 1, // DEF
+      height: 50 + 2*newSpirit.stats.hp + 8*newSpirit.stats.spd, // SPD, HP - 158~216
+      bodyWidth: -5 + Math.floor(1.5*newSpirit.stats.hp) + 1*newSpirit.stats.def, // HP, DEF
+      neckBaseRatio: 0.6*newSpirit.stats.def, // DEF
+      leanForward: (newSpirit.stats.atk-12)**2/18, // ATK
       
-      // armLengthRatio: 0.5+rand()*0.2, // SPD
-      // armWidthRatio: 0.35 + rand()*0.3, // ATK, DEF
-      // weaponGrip: 1, // ATK, SPD
+      armLengthRatio: 0.1+0.05*newSpirit.stats.spd, // SPD
+      armWidthRatio: -0.3 + (newSpirit.stats.def + newSpirit.stats.atk)*0.03, // ATK, DEF
 
-      // animSpeed: 0.8 + rand()*0.4,
-
-      // weaponType: 1,
-      // headType: 1
+      animSpeed: (newSpirit.stats.spd - 2) * 0.15, // SPD
+      headType: 1 + rand(0)
     }
+
+    return newSpirit
   }
 }
 
