@@ -48,7 +48,7 @@ io.on('connection', (socket) => {
     if (socket.rooms.size === 1) { // each player is in a solo room by default, so allowed to join 1 more
       const roomCode = validRoomCode()
       socket.join(roomCode)
-      games.push(new GameState(roomCode, io.to(roomCode)))
+      games.push(new GameState(roomCode))
       console.log(`Room ${roomCode} has been created.`)
     }
   })
@@ -58,12 +58,62 @@ io.on('connection', (socket) => {
       for (let i in games) {
         if (games[i].room === roomCode) {
           socket.join(roomCode)
-          games[i].p.push(socket.id)
+          games[i].plr.push(socket.id)
           console.log(`Room ${roomCode} has been joined by another.`)
+          
+          games[i].moveToTeambuild() // progress game state
+          for (let j in games[i].plr) { // client will need to start teambuild on this signal:
+            io.to(games[i].plr[j]).emit('offerSpirit', games[i].currentlyOffering[j], 'start', j) 
+          }
         }
       }
     }
   })
+
+  socket.on('rerollSpirit', (roomCode) => { // players always emit roomCode to make the search faster
+    for (let i in games) { if (games[i].room === roomCode) { // search rooms
+        for (let j in games[i].plr) { if (games[i].plr[j] === socket.id) { // search players in room
+          if (games[i].rerolls[j] > 0) {
+              games[i].rerolls[j] --
+              games[i].currentlyOffering[j] = games[i].offerSpirit()
+              io.to(games[i].plr[j]).emit('offerSpirit', games[i].currentlyOffering[j], 'reroll') 
+            }
+          }
+        }
+      }
+    }
+  })
+
+  socket.on('recruitSpirit', (roomCode) => { // players always emit roomCode to make the search faster
+    for (let i in games) { if (games[i].room === roomCode) { // search rooms
+        for (let j in games[i].plr) { if (games[i].plr[j] === socket.id) { // search players in room
+
+          if (games[i].teams[j].length < 3) {
+              games[i].teams[j].push(games[i].currentlyOffering[j])
+              io.to(socket.id).emit('confirmSpirit', games[i].currentlyOffering[j], () => {
+
+                if (games[i].teams[j].length < 3) { // team still not full after pushing to team?
+                  games[i].currentlyOffering[j] = games[i].offerSpirit()
+                  io.to(games[i].plr[j]).emit('offerSpirit', games[i].currentlyOffering[j], 'confirmed') 
+                } else { // team full
+                  games[i].ready[j] = 'battles'
+                  if (games[i].ready[0] === 'battles' && games[i].ready[1] === 'battles') {
+                    games[i].phase = 'battles'
+                    io.to(games[i].room).emit('beginBattles', games[i].teams, games[i].firstChoice)
+                  }
+                }
+              })
+            }
+          }
+        }
+      }
+    }
+  })
+
+  socket.on('chooseMatchup', (roomCode, combatants) => {
+    
+  })
+
 
   socket.on('disconnect', () => {
     console.log(`Player disconnected: ${socket.id}`)

@@ -1,6 +1,4 @@
 import { io } from "socket.io-client";
-import { test } from '../test.js';
-import { Joint, SpineBox } from '../drawUtils.js';
 import { CharBody } from '../charBody.js';
 const rand = Math.random
 class Game extends Phaser.Scene {
@@ -60,10 +58,6 @@ class Game extends Phaser.Scene {
   
     update() {
    
-      if (!this.listenerAdded) {
-        this.listenerAdded = true;
-        
-      }
     }
   
   }

@@ -1,5 +1,6 @@
 import { Scene } from "phaser";
 import { CharBody } from "../charBody";
+import { io } from "socket.io-client";
 
 // const room = getQueryParameter("room") || getRandomString(5);
 // window.history.replaceState(
@@ -132,7 +133,11 @@ export class StartMatch extends Scene {
       300,
       "attack = 5\n\ndefence = 6\n\nhp = 25\n\nspeed = 7"
     );
+
+    // Setup Socket.IO
+    this.socket = io(); 
   }
+
   update() {
     this.bg.tilePositionY += 0.5;
     this.placeholder.frameAdvance()
