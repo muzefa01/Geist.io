@@ -6,7 +6,7 @@ export class MainMenu extends Scene {
   }
 
   preload() {
-    this.load.image("start-match", "/assets/geiststartmatch.png");
+    this.load.image("start-game", "/assets/geist-start-game.png");
 
     this.load.image("join-match", "/assets/geist-join-arena.png");
 
@@ -22,7 +22,7 @@ export class MainMenu extends Scene {
     this.add.image(412, 110, "logo");
 
     const startMatchButton = this.add
-      .image(412, 270, "start-match")
+      .image(412, 270, "start-game")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 

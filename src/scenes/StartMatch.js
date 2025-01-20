@@ -1,5 +1,7 @@
 import { Scene } from "phaser";
 import { CharBody } from "../charBody";
+import { io } from "socket.io-client";
+
 
 // const room = getQueryParameter("room") || getRandomString(5);
 // window.history.replaceState(
@@ -7,6 +9,8 @@ import { CharBody } from "../charBody";
 //   document.title,
 //   updateQueryParameter("room", room)
 // );
+
+console.log(roomCode)
 
 const room = 3000;
 const rand = Math.random;
@@ -16,7 +20,7 @@ export class StartMatch extends Scene {
     super("StartMatch");
   }
   preload() {
-    // this.socket = io(`localhost:3000?room=${room}`);
+    this.socket = io();
     this.load.script(
       "webfont",
       "https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"
@@ -25,16 +29,33 @@ export class StartMatch extends Scene {
     this.load.image("resummon", "/assets/geist-resummon.png");
     this.load.image("placeholder", "/assets/geist-placeholder.png");
     this.load.image("stats", "/assets/geist-stats.png");
-    this.load.image('head1', 'assets/head1.png');
+    this.load.image("head1", "assets/head1.png");
+    this.load.image("start-match", "assets/geiststartmatch.png");
   }
 
   create() {
+    //start match button
+
+    //join match functionality
     const add = this.add;
 
     this.bg = this.add
       .tileSprite(0, 0, 1280, 720, "background")
       .setOrigin(0)
       .setScrollFactor(0, 1);
+
+    this.btnCreateRoom = this.add.text(100, 100, "createRoom", {
+      fill: "#FFFFFF",
+    });
+    this.btnCreateRoom.setInteractive();
+    this.btnCreateRoom
+      .on("pointerdown", () => {
+        this.socket.emit("createRoom");
+        this.btnCreateRoom.setStyle({ fill: "#FF00FF" });
+      })
+      .on("pointerup", () => {
+        this.btnCreateRoom.setStyle({ fill: "#FFFFFF" });
+      });
 
     const logo = this.add
       .image(412, 80, "logo")
@@ -56,7 +77,7 @@ export class StartMatch extends Scene {
         families: ["IM Fell English"],
       },
       active: function () {
-        add.text(285, 160, `your match code is ${room}`, {
+        add.text(285, 160, `your match code is ${"no"}`, {
           fontFamily: '"IM Fell English", serif',
           fontSize: 20,
           color: "#ffffff",
@@ -104,7 +125,7 @@ export class StartMatch extends Scene {
         resummon.clearTint();
       });
 
-    this.placeholder = (this.testChar = new CharBody(
+    this.placeholder = this.testChar = new CharBody(
       this,
       { x: 412, y: 580 },
       {
@@ -123,7 +144,7 @@ export class StartMatch extends Scene {
         weaponType: 1,
         headType: 1,
       }
-    ));
+    );
 
     const statsBox = this.add.image(150, 400, "stats").setScale(2.2);
 
@@ -135,6 +156,6 @@ export class StartMatch extends Scene {
   }
   update() {
     this.bg.tilePositionY += 0.5;
-    this.placeholder.frameAdvance()
+    this.placeholder.frameAdvance();
   }
 }
