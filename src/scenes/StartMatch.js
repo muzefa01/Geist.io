@@ -1,8 +1,5 @@
 import { Scene } from "phaser";
-import { io } from "socket.io-client";
-import { getQueryParameter } from "../utils";
-import { getRandomString } from "../utils";
-import { updateQueryParameter } from "../utils";
+import { CharBody } from "../charBody";
 
 // const room = getQueryParameter("room") || getRandomString(5);
 // window.history.replaceState(
@@ -11,7 +8,8 @@ import { updateQueryParameter } from "../utils";
 //   updateQueryParameter("room", room)
 // );
 
-const room = 3000
+const room = 3000;
+const rand = Math.random;
 
 export class StartMatch extends Scene {
   constructor() {
@@ -27,6 +25,7 @@ export class StartMatch extends Scene {
     this.load.image("resummon", "/assets/geist-resummon.png");
     this.load.image("placeholder", "/assets/geist-placeholder.png");
     this.load.image("stats", "/assets/geist-stats.png");
+    this.load.image('head1', 'assets/head1.png');
   }
 
   create() {
@@ -105,7 +104,26 @@ export class StartMatch extends Scene {
         resummon.clearTint();
       });
 
-    const placeholder = this.add.image(412, 380, "placeholder").setScale(1.5);
+    this.placeholder = (this.testChar = new CharBody(
+      this,
+      { x: 412, y: 580 },
+      {
+        height: 150 + rand() * 120, // HP, SPD
+        bodyWidth: 30 + rand() * 30, // HP, DEF
+        neckBaseRatio: 0.28 + rand() * 0.37, // DEF
+        leanForward: rand() ** 2 * 20, // ATK
+        neckType: 1, // DEF
+
+        armLengthRatio: 0.5 + rand() * 0.2, // SPD
+        armWidthRatio: 0.35 + rand() * 0.3, // ATK, DEF
+        weaponGrip: 1, // ATK, SPD
+
+        animSpeed: 0.8 + rand() * 0.4,
+
+        weaponType: 1,
+        headType: 1,
+      }
+    ));
 
     const statsBox = this.add.image(150, 400, "stats").setScale(2.2);
 
@@ -117,5 +135,6 @@ export class StartMatch extends Scene {
   }
   update() {
     this.bg.tilePositionY += 0.5;
+    this.placeholder.frameAdvance()
   }
 }
