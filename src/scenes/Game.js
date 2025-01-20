@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
-import { test } from './test.js';
-import { Joint, SpineBox } from './drawUtils.js';
-import { CharBody } from './charBody.js';
+import { test } from '../test.js';
+import { Joint, SpineBox } from '../drawUtils.js';
+import { CharBody } from '../charBody.js';
 
 class Game extends Phaser.Scene {
     constructor() {
