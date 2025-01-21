@@ -8,8 +8,6 @@ import { io } from "socket.io-client";
 //   updateQueryParameter("room", room)
 // );
 
-console.log(roomCode)
-
 const room = 3000;
 const rand = Math.random;
 
