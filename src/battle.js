@@ -9,15 +9,17 @@ class Spirit {
         this.ticker = 0
     }
     // incrementing ticker by its corresponding speed
-    ticker() {
-        this.ticker += this.speed
+    incrementTicker() {
+        this.ticker += this.speed;
     }
 
     attack(opponent) {
-        const damage = (this.attack - opponent.defence)
+        const damage = Math.max(this.attack - opponent.defence, 0)
         opponent.currentHealth -= damage
+        console.log(`${this.name} attacks ${opponent.name} for ${damage} damage!`);
 
         if (opponent.currentHealth <= 0) { // death condition
+            console.log(`${opponent.name} has been defeated!`);
             return true
         }
         return false
@@ -30,46 +32,43 @@ class Spirit {
 
 class Battle {
     constructor(spirit1, spirit2) {
-        this.spirit1 = spirit1
-        this.spirit2 = spirit2
+        this.spirit1 = spirit1;
+        this.spirit2 = spirit2;
+        this.round = 1;
     }
 
     startRound() {
-        this.round++
+        console.log(`Starting round ${this.round}!`);
+        while (true) {
+            // Increment tickers
+            this.spirit1.incrementTicker();
+            this.spirit2.incrementTicker();
 
-        this.spirit1.attack()
-        this.spirit2.attack()
+            if (this.spirit1.ticker >= 100 || this.spirit2.ticker >= 100) {
+                // Determine turn order
+                const first = this.spirit1.ticker > this.spirit2.ticker ? this.spirit1 : this.spirit2;
+                const second = first === this.spirit1 ? this.spirit2 : this.spirit1;
 
-        if (this.spirit1.ticker >= 100 && this.spirit2.ticker >= 100) {
-            if (this.spirit1.ticker > this.spirit2.ticker) {
-               if (this.spirit1.attack(this.spirit2)) {
-                this.spirit1.points++
-                //function to end the battle - pending
-                return;
-               }
-               this.spirit1.resetTicker();
-               
-               if (this.spirit2.attack(this.spirit1)) {
-                this.spirit2.points++
-                //function to end the battle - pending
-                return;
-            }
-            this.spirit2.resetTicker();
-            } else {
-                if (this.spirit2.attack(this.spirit1)) {
-                    this.spirit2.points++
-                    //function to end the battle - pending
-                    return;
+                // First spirit attacks
+                if (first.attack(second)) {
+                    first.points++;
+                    this.endBattle(first);
+                    break;
                 }
-                this.spirit2.resetTicker()
+                first.resetTicker();
 
-                if(this.spirit1.attack(this.spirit2)) {
-                    this.spirit1.points++
-                    //function to end the battle - pending
-                    return;
+                // Second spirit attacks if still alive
+                if (second.attack(first)) {
+                    second.points++;
+                    this.endBattle(second);
+                    break;
                 }
-                this.spirit1.resetTicker()
+                second.resetTicker();
             }
         }
+    }
+
+    endBattle(winner) {
+        console.log(`${winner.name} wins the battle with ${winner.points} points!`);
     }
 }
