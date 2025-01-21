@@ -1,9 +1,11 @@
 import { Scene } from "phaser";
 import { CharBody } from "../charBody";
 import { io } from "socket.io-client";
+import { GameState } from "../gameState";
 
 let room = "";
 const rand = Math.random;
+const bodies = []
 
 export class StartMatch extends Scene {
   constructor() {
@@ -14,7 +16,11 @@ export class StartMatch extends Scene {
       "webfont",
       "https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"
     );
-    this.socket = io('https://geist-io.onrender.com/');
+
+    // use io('https...') to commit for deploy, and io() for testing
+    //this.socket = io('https://geist-io.onrender.com/');
+    this.socket = io();
+
     this.load.image("copy", "/assets/geist-copy.png");
     this.load.image("resummon", "/assets/geist-resummon.png");
     this.load.image("stats", "/assets/geist-stats.png");
@@ -39,7 +45,7 @@ export class StartMatch extends Scene {
       .setScrollFactor(0, 1);
 
     //start match button
-    this.socket.on("yourRoomIs", (roomCode) => {
+    this.socket.on('yourRoomIs', (roomCode) => {
       room = roomCode;
       console.log(room);
       this.text1 = this.add
@@ -52,9 +58,16 @@ export class StartMatch extends Scene {
         .setVisible(true);
     });
 
-    this.socket.on("offerSpirit", (spirit, mode, index) => {
-      if(mode === "start"){
+    let plrIndex = -1
+
+    this.socket.on('offerSpirit', (spirit, mode, index) => {
+      if(mode === 'start'){
+        plrIndex = index
         console.log(spirit)
+        //display offering
+        this.placeholder.hide()
+        let offeredSpirit = new CharBody (this, {x: 400, y: 500}, spirit.attributes)
+        bodies.push(offeredSpirit)
       }
     })
 
@@ -159,8 +172,8 @@ export class StartMatch extends Scene {
               document.getElementById("codeText").value
             );
             this.btnJoinRoom.setStyle({ fill: "#FF00FF" });
-          })
-          .on("pointerup", () => {
+      })
+      .on("pointerup", () => {
             this.btnJoinRoom.setStyle({ fill: "#FFFFFF" });
           });
       });
@@ -179,10 +192,13 @@ export class StartMatch extends Scene {
     //     resummon.clearTint();
     //   });
 
+    const testGame = new GameState("0000")
+    console.log(testGame)
+    const testAttribs = testGame.offerSpirit().attributes
     this.placeholder = this.testChar = new CharBody(
       this,
       { x: 412, y: 580 },
-      {
+      /*{
         height: 150 + rand() * 120, // HP, SPD
         bodyWidth: 30 + rand() * 30, // HP, DEF
         neckBaseRatio: 0.28 + rand() * 0.37, // DEF
@@ -197,14 +213,18 @@ export class StartMatch extends Scene {
 
         weaponType: 1,
         headType: 1,
-      }
+      }*/
+      testAttribs
     );
 
-    this.placeholder.hide();
+    //this.placeholder.hide();
   }
 
   update() {
     this.bg.tilePositionY += 0.5;
     this.placeholder.frameAdvance();
+    for (let i in bodies) {
+      bodies[i].frameAdvance()
+    }
   }
 }
