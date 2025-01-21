@@ -14,7 +14,7 @@ export class StartMatch extends Scene {
       "webfont",
       "https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"
     );
-    this.socket = io();
+    this.socket = io('https://geist-io.onrender.com/');
     this.load.image("copy", "/assets/geist-copy.png");
     this.load.image("resummon", "/assets/geist-resummon.png");
     this.load.image("stats", "/assets/geist-stats.png");

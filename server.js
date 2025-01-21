@@ -3,7 +3,7 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import { fileURLToPath } from 'url';
-
+import cors from 'cors';
 import { GameState } from './src/gameState.js'
 
 const __filename = fileURLToPath(import.meta.url);
@@ -12,10 +12,14 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
+
+app.use(cors());
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-server.listen(3000, () => {
-  console.log('Server running on http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
 
 function randInt(max) {return Math.floor(Math.random() * (max+1))}
