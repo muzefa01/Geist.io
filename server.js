@@ -1,10 +1,10 @@
-import path from "path";
-import express from "express";
-import http from "http";
-import { Server } from "socket.io";
-import { fileURLToPath } from "url";
+import path from 'path';
+import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
+import { fileURLToPath } from 'url';
 
-import { GameState } from "./src/gameState.js";
+import { GameState } from './src/gameState.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,43 +12,35 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, 'public')));
 
 server.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
+  console.log('Server running on http://localhost:3000');
 });
 
-function randInt(max) {
-  return Math.floor(Math.random() * (max + 1));
-}
-function randChar() {
-  let num = randInt(35);
-  return num > 9 ? String.fromCharCode(num + 55) : String(num);
-}
-function randRoomCode() {
-  return randChar() + randChar() + randChar() + randChar();
-}
+function randInt(max) {return Math.floor(Math.random() * (max+1))}
+function randChar() {let num = randInt(35); return num > 9 ? String.fromCharCode(num+55) : String(num)}
+function randRoomCode() {return randChar() + randChar() + randChar() + randChar()}
 function validRoomCode() {
-  let code = "";
-  let valid = false;
-  while (!valid) {
-    // room code generation. 4 characters, 0-9 A-Z, avoids duplicates
-    valid = true;
-    code = randRoomCode();
+  let code = ""
+  let valid = false
+  while (!valid) { // room code generation. 4 characters, 0-9 A-Z, avoids duplicates
+    valid = true
+    code = randRoomCode()
     for (let i in games) {
-      if (games[i].room === code) valid = false;
+      if (games[i].room === code) 
+        valid = false
     }
   }
-  return code;
+  return code
 }
 
-const games = [];
+const games = []
 /*
 {room: 09AZ}
 */
-export let roomCode = 0;
 
-io.on("connection", (socket) => {
+io.on('connection', (socket) => {
   console.log(`Player connected: ${socket.id}`);
   const player = socket
   setTimeout(() => {
@@ -59,22 +51,17 @@ io.on("connection", (socket) => {
   }, 800)
 
   socket.on('createRoom', () => {
-    io.to(socket.id).emit('log', 'ONCREATE io to socket id emit')
-    io.emit('log', 'ONCREATE io emit')
-    console.log('ONCREATE io emit')
     if (socket.rooms.size === 1) { // each player is in a solo room by default, so allowed to join 1 more
       const roomCode = validRoomCode()
       socket.join(roomCode)
       games.push(new GameState(roomCode))
       console.log(`Room ${roomCode} has been created.`)
       io.to(socket.id).emit("yourRoomIs", roomCode)
-      io.to(roomCode).emit('log', 'INCREATE io to roomcode emit')
     }
-  });
+  })
 
-  socket.on("joinRoom", (roomCode) => {
-    if (socket.rooms.size === 1) {
-      // each player is in a solo room by default, so allowed to join 1 more
+  socket.on('joinRoom', (roomCode) => {
+    if (socket.rooms.size === 1) { // each player is in a solo room by default, so allowed to join 1 more
       for (let i in games) {
         if (games[i].room === roomCode) {
           socket.join(roomCode)
@@ -142,13 +129,14 @@ io.on("connection", (socket) => {
       }
     }
   })
+
   socket.on('chooseMatchup2', (roomCode, chosenFighters) => {
     for (let i in games) {
       if (games[i].room === roomCode) {
         if (socket.id === games[i].plr[ games[i].secondChoice ]) { // if the sender is the acting player
           if (games[i].fighterCheck(chosenFighters) && games[i.fighterCheck(games[i].others(chosenFighters))]) {
+            io.to(games[i].room).emit('secondThirdBattles', chosenFighters, games[i].others(chosenFighters))
             // games[i].battle'em() twice
-            // emit chosen to both players and they fight more
             // and they win
           }
         }
@@ -157,7 +145,7 @@ io.on("connection", (socket) => {
   })
 
 
-  socket.on("disconnect", () => {
-    console.log(`Player disconnected: ${socket.id}`);
+  socket.on('disconnect', () => {
+    console.log(`Player disconnected: ${socket.id}`)
   });
 });
