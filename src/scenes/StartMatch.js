@@ -16,7 +16,6 @@ export class StartMatch extends Scene {
     super("StartMatch");
   }
   preload() {
-    this.socket = io();
     this.load.script(
       "webfont",
       "https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"
@@ -43,6 +42,12 @@ export class StartMatch extends Scene {
     this.socket.on('yourRoomIs', (roomCode) => {
       room = roomCode
       console.log(room)
+      this.text1 = this.add.text(250, 250, `your match code is ${room}`, {
+        fontFamily: '"IM Fell English", serif',
+        fontSize: 20,
+        color: "#ffffff",
+        fontStyle: "normal",
+      })
     })
     
 
@@ -84,12 +89,12 @@ export class StartMatch extends Scene {
         families: ["IM Fell English"],
       },
       active: function () {
-        add.text(285, 160, `your match code is ${"no"}`, {
+        add.text(285, 160, `your match code is ${"..."}`, {
           fontFamily: '"IM Fell English", serif',
           fontSize: 20,
           color: "#ffffff",
           fontStyle: "normal",
-        }),
+        })
           add.text(265, 200, `copy and send to a friend to begin`, {
             fontFamily: '"IM Fell English", serif',
             fontSize: 20,
@@ -98,6 +103,7 @@ export class StartMatch extends Scene {
           });
       },
     });
+
     const copyButton = this.add
       .image(515, 170, "copy")
       .setInteractive({ useHandCursor: true });
@@ -161,7 +167,12 @@ export class StartMatch extends Scene {
       "attack = 5\n\ndefence = 6\n\nhp = 25\n\nspeed = 7"
     );
 
-    this.btnCreateRoom = this.add.text(100, 100, 'createRoom', {fill: '#FFFFFF'})
+    this.btnCreateRoom = this.add.text(100, 100, 'createRoom', {fill: '#FFFFFF'}, {
+      fontFamily: '"IM Fell English", serif',
+      fontSize: 20,
+      color: "#ffffff",
+      fontStyle: "normal",
+    })
     this.btnCreateRoom.setInteractive()
     this.btnCreateRoom.on('pointerdown', () => {
       this.socket.emit('createRoom')

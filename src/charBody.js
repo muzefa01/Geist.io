@@ -26,14 +26,14 @@ class CharBody {
     this.basePos = basePos
     this.frame = 0
     this.breathOffset = 0
-    this.scale = {x: 1, y: 1}
+    this.scale = {x: 1, y: 1} // scaling not implemented, this is just for H-flipping
+    this.active = true
     
      // tentatively declaring which stats affect each body attribute here
       this.height = attributes.height // HP, SPD
       this.bodyWidth = attributes.bodyWidth // HP, DEF
       this.neckBaseRatio = attributes.neckBaseRatio // DEF
       this.leanForward = attributes.leanForward // ATK
-      this.neckType = attributes.neckType // DEF
       
       this.armLengthRatio = attributes.armLengthRatio // SPD
       this.armWidthRatio = attributes.armWidthRatio // ATK, DEF
@@ -41,7 +41,6 @@ class CharBody {
 
       this.animSpeed = attributes.animSpeed // SPD
 
-      this.weaponType = attributes.weaponType
       this.headType = attributes.headType
       
     // i apologise for the unreadable mess of numbers here, it doesn't really get any cleaner
@@ -99,15 +98,27 @@ class CharBody {
     this.head.scale = this.headScale
     this.head.rotation = -0.2
     
-    // draw
-    // this.torso.draw()
-    // this.arms[0].draw()
-    // this.arms[1].draw()
+  }
+
+  show() {
+    this.active = true
+    this.head.setActive(true)
+    this.head.setVisible(true)
+  }
+  hide() {
+    this.active = false
+    this.torso.graphics.clear()
+    for (let i in [0, 0]) {
+      this.arms[i].graphics.clear()
+      this.hands[i].clear()
+    }
+    this.head.setActive(false)
+    this.head.setVisible(false)
   }
 
   frameAdvance() {
     this.frame = (this.frame + this.animSpeed) % (2*PI*1000)
-    this.update()
+    if (this.active) this.update()
   }
 
   updateArms() {
