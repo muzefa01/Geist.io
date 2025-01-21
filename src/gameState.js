@@ -69,8 +69,19 @@ class GameState {
     return newSpirit
   }
 
-  fighterCheck(chosen) { // array like [0, 1] or [2, 2]
+  fighterCheck(chosen) { // chosen is an array like [0, 1] or [2, 2]
     return this.fightersActive[chosen[0]] && this.fightersActive[chosen[1]]
+  }
+
+  otherFighterCheck(chosen) {
+    const others = [-1, -1]
+    for (let i in this.fightersActive) {
+      for (let j in others) {
+        if (this.fightersActive[j][i] && !(chosen[j] === i))
+          others[j] = i
+      }
+    }
+    return others
   }
 }
 

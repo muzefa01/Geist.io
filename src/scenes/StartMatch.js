@@ -8,7 +8,7 @@ import { io } from "socket.io-client";
 //   updateQueryParameter("room", room)
 // );
 
-const room = 3000;
+let room = 3000;
 const rand = Math.random;
 
 export class StartMatch extends Scene {
@@ -38,6 +38,11 @@ export class StartMatch extends Scene {
 
     this.socket.on('log', (msg) => {
       console.log("MSG: "+ msg)
+    })
+
+    this.socket.on('yourRoomIs', (roomCode) => {
+      room = roomCode
+      console.log(room)
     })
     
 
@@ -156,8 +161,12 @@ export class StartMatch extends Scene {
       "attack = 5\n\ndefence = 6\n\nhp = 25\n\nspeed = 7"
     );
 
-    // Setup Socket.IO
-    this.socket = io(); 
+    this.btnCreateRoom = this.add.text(100, 100, 'createRoom', {fill: '#FFFFFF'})
+    this.btnCreateRoom.setInteractive()
+    this.btnCreateRoom.on('pointerdown', () => {
+      this.socket.emit('createRoom')
+      this.btnCreateRoom.setStyle({fill: '#FF00FF'})
+    }).on('pointerup', () => {this.btnCreateRoom.setStyle({fill: '#FFFFFF'})})
   }
 
   update() {
