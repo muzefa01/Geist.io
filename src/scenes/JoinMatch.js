@@ -16,7 +16,6 @@ export class JoinMatch extends Scene {
   }
 
   create() {
-    const add = this.add;
 
     this.bg = this.add
       .tileSprite(0, 0, 1280, 720, "background")
