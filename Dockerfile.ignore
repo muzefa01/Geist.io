@@ -1,0 +1,12 @@
+FROM node:latest
+
+COPY package.json .
+COPY package-lock.json .
+
+RUN npm install
+
+COPY server.js .
+COPY README.md .
+COPY vite.config.js .
+COPY _redirects .
+COPY public src index.html ./
