@@ -24,7 +24,7 @@ class GameState {
     }
     this.phase = "teambuild"
   }
-
+  
   offerSpirit() {
     const newSpirit = {
       stats: {
@@ -56,7 +56,7 @@ class GameState {
     newSpirit.attributes = {
       height: 50 + 2*newSpirit.stats.hp + 8*newSpirit.stats.spd, // SPD, HP - 158~216
       bodyWidth: -5 + Math.floor(1.5*newSpirit.stats.hp) + 1*newSpirit.stats.def, // HP, DEF
-      neckBaseRatio: 0.6*newSpirit.stats.def, // DEF
+      neckBaseRatio: 0.06*newSpirit.stats.def *0+0.7, // DEF
       leanForward: (newSpirit.stats.atk-12)**2/18, // ATK
       
       armLengthRatio: 0.1+0.05*newSpirit.stats.spd, // SPD

@@ -75,6 +75,7 @@ io.on('connection', (socket) => {
           games[i].moveToTeambuild() // progress game state
           for (let j in games[i].plr) { // client will need to start teambuild on this signal:
             io.to(games[i].plr[j]).emit('offerSpirit', games[i].currentlyOffering[j], 'start', j) // j is plr index
+            console.log(games[i].currentlyOffering[j].attributes)
           }
         }
       }
