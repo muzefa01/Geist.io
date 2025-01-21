@@ -58,7 +58,7 @@ io.on("connection", (socket) => {
       socket.join(roomCode)
       games.push(new GameState(roomCode))
       console.log(`Room ${roomCode} has been created.`)
-      io.to(socket.id).emit("yourRoomIs", roomCode)
+      io.emit("yourRoomIs", roomCode)
     }
   });
 

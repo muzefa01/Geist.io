@@ -11,7 +11,7 @@ class GameState {
     this.teams = [[], []]
     this.currentlyOffering = [{}, {}]
     this.ready = ['none', 'none']
-    this.rerolls[3, 3] // rerolls per player - shared between choosing spirits and upgrades
+    this.rerolls = [3, 3] // rerolls per player - shared between choosing spirits and upgrades
 
     this.firstChoice = coin()? '0': '1'
   }
