@@ -19,8 +19,8 @@ class GameState {
   }
 
   moveToTeambuild() {
-    for (let i in plr) {
-      currentlyOffering[i] = this.offerSpirit()
+    for (let i in this.plr) {
+      this.currentlyOffering[i] = this.offerSpirit()
     }
     this.phase = "teambuild"
   }
