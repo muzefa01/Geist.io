@@ -8,7 +8,7 @@ export class MainMenu extends Scene {
   preload() {
     this.load.image("start-game", "/assets/geist-start-game.png");
 
-    this.load.image("join-match", "/assets/geist-join-arena.png");
+    this.load.image("join-arena", "/assets/geist-join-arena.png");
 
     this.load.image("how-to", "/assets/geist-h2p.png");
   }
@@ -22,7 +22,7 @@ export class MainMenu extends Scene {
     this.add.image(412, 110, "logo");
 
     const startMatchButton = this.add
-      .image(412, 270, "start-game")
+      .image(412, 300, "start-game")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
@@ -37,24 +37,8 @@ export class MainMenu extends Scene {
         this.scene.start("StartMatch");
       });
 
-    const joinMatchButton = this.add
-      .image(412, 400, "join-match")
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true });
-
-    joinMatchButton
-      .on("pointerdown", () => {
-        this.scene.start("JoinMatch");
-      })
-      .on("pointerover", () => {
-        joinMatchButton.setScale(1.05).setTint(0xca7dff);
-      })
-      .on("pointerout", () => {
-        joinMatchButton.setScale(1).clearTint();
-      });
-
     const howToButton = this.add
-      .image(412, 520, "how-to")
+      .image(412, 430, "how-to")
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 

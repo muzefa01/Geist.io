@@ -17,11 +17,11 @@ export class StartMatch extends Scene {
     this.socket = io();
     this.load.image("copy", "/assets/geist-copy.png");
     this.load.image("resummon", "/assets/geist-resummon.png");
-    this.load.image("placeholder", "/assets/geist-placeholder.png");
     this.load.image("stats", "/assets/geist-stats.png");
     this.load.image("head1", "assets/head1.png");
     this.load.image("start-match", "assets/geiststartmatch.png");
     this.load.image("create-match", "assets/geist-create-match.png");
+    this.load.image("join-match", "assets/geist-join-match.png");
   }
 
   create() {
@@ -32,6 +32,11 @@ export class StartMatch extends Scene {
     });
 
     const add = this.add;
+
+    this.bg = this.add
+      .tileSprite(0, 0, 1280, 720, "background")
+      .setOrigin(0)
+      .setScrollFactor(0, 1);
 
     //start match button
     this.socket.on("yourRoomIs", (roomCode) => {
@@ -47,10 +52,11 @@ export class StartMatch extends Scene {
         .setVisible(true);
     });
 
-    this.bg = this.add
-      .tileSprite(0, 0, 1280, 720, "background")
-      .setOrigin(0)
-      .setScrollFactor(0, 1);
+    this.socket.on("offerSpirit", (spirit, mode, index) => {
+      if(mode === "start"){
+        console.log(spirit)
+      }
+    })
 
     this.btnCreateRoom = this.add.image(412, 250, "create-match");
     this.btnCreateRoom.setInteractive({ useHandCursor: true });
@@ -64,8 +70,9 @@ export class StartMatch extends Scene {
       .on("pointerdown", () => {
         this.socket.emit("createRoom");
         this.btnCreateRoom.setVisible(false);
+        this.joinMatchBtn.setVisible(false);
         this.add
-          .text(265, 200, `copy and send to a friend to begin`, {
+          .text(270, 200, `copy and send to a friend to begin`, {
             fontFamily: '"IM Fell English", serif',
             fontSize: 20,
             color: "#ffffff",
@@ -73,6 +80,7 @@ export class StartMatch extends Scene {
           })
           .setVisible(true);
         copyButton.setVisible(true);
+        this.placeholder.show();
       });
 
     const logo = this.add
@@ -91,7 +99,7 @@ export class StartMatch extends Scene {
       });
 
     const copyButton = this.add
-      .image(515, 170, "copy")
+      .image(525, 170, "copy")
       .setInteractive({ useHandCursor: true })
       .setVisible(false);
 
@@ -109,6 +117,52 @@ export class StartMatch extends Scene {
       })
       .on("pointerup", () => {
         copyButton.clearTint();
+      });
+
+    //join match
+    this.joinMatchBtn = this.add.image(412, 380, "join-match");
+    this.joinMatchBtn.setInteractive({ useHandCursor: true });
+    this.joinMatchBtn
+      .on("pointerover", () => {
+        this.joinMatchBtn.setScale(1.05).setTint(0xca7dff);
+      })
+      .on("pointerout", () => {
+        this.joinMatchBtn.setScale(1).clearTint();
+      })
+      .on("pointerdown", () => {
+        this.btnCreateRoom.setVisible(false);
+        this.joinMatchBtn.setVisible(false);
+        this.add
+          .text(265, 160, `to join a match, enter code below`, {
+            fontFamily: '"IM Fell English", serif',
+            fontSize: 20,
+            color: "#ffffff",
+            fontStyle: "normal",
+          })
+          .setVisible(true);
+        this.placeholder.show();
+        this.txtJoinRoon = this.add.dom(375, 210).createFromHTML(`
+          <input type="text" id="codeText" name="codeText" placeholder="Room Code" style="font-size: 15px">
+          `);
+        this.btnJoinRoom = this.add
+          .text(480, 195, `join`, {
+            fontFamily: '"IM Fell English", serif',
+            fontSize: 20,
+            color: "#ffffff",
+            fontStyle: "normal",
+          })
+          .setInteractive({ useHandCursor: true });
+        this.btnJoinRoom
+          .on("pointerdown", () => {
+            this.socket.emit(
+              "joinRoom",
+              document.getElementById("codeText").value
+            );
+            this.btnJoinRoom.setStyle({ fill: "#FF00FF" });
+          })
+          .on("pointerup", () => {
+            this.btnJoinRoom.setStyle({ fill: "#FFFFFF" });
+          });
       });
 
     // const resummon = this.add
@@ -147,13 +201,6 @@ export class StartMatch extends Scene {
     );
 
     this.placeholder.hide();
-    // const statsBox = this.add.image(150, 400, "stats").setScale(2.2);
-
-    // const stats = this.add.text(
-    //   80,
-    //   300,
-    //   "attack = 5\n\ndefence = 6\n\nhp = 25\n\nspeed = 7"
-    // );
   }
 
   update() {
