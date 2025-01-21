@@ -29,6 +29,8 @@ class Game extends Phaser.Scene {
         weaponType: 1,
         headType: 1
     })
+
+
     setInterval(() => this.testChar.frameAdvance(), 16)
     this.testChar.scale.x = -1
 
