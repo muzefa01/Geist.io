@@ -43,6 +43,12 @@ const games = []
 io.on('connection', (socket) => {
   console.log(`Player connected: ${socket.id}`);
   const player = socket
+  setTimeout(() => {
+    console.log(socket.rooms)
+    socket.emit('log', 'socket emit')
+    io.to(socket.id).emit('log', 'io to socket id emit')
+    io.emit('log', 'io emit')
+  }, 800)
 
   socket.on('createRoom', () => {
     if (socket.rooms.size === 1) { // each player is in a solo room by default, so allowed to join 1 more
@@ -51,6 +57,7 @@ io.on('connection', (socket) => {
       games.push(new GameState(roomCode))
       console.log(`Room ${roomCode} has been created.`)
       io.to(socket.id).emit("yourRoomIs", roomCode)
+      io.to(roomCode).emit('log', 'io to roomcode emit')
     }
   })
 
@@ -64,7 +71,7 @@ io.on('connection', (socket) => {
           
           games[i].moveToTeambuild() // progress game state
           for (let j in games[i].plr) { // client will need to start teambuild on this signal:
-            io.to(games[i].plr[j]).emit('offerSpirit', games[i].currentlyOffering[j], 'start', j) 
+            io.to(games[i].plr[j]).emit('offerSpirit', games[i].currentlyOffering[j], 'start', j) // j is plr index
           }
         }
       }
@@ -111,8 +118,28 @@ io.on('connection', (socket) => {
     }
   })
 
-  socket.on('chooseMatchup', (roomCode, combatants) => {
-    
+  socket.on('chooseMatchup1', (roomCode, chosenFighters) => {
+    for (let i in games) {
+      if (games[i].room === roomCode) {
+        if (socket.id === games[i].plr[ games[i].firstChoice ]) { // if the sender is the acting player
+          // if both fighters are still active
+          // games[i].battle'em() - find & tally winner, set alreadyFoughts
+          // emit chosen to both players and they fight
+        }
+      }
+    }
+  })
+  socket.on('chooseMatchup2', (roomCode, chosenFighters) => {
+    for (let i in games) {
+      if (games[i].room === roomCode) {
+        if (socket.id === games[i].plr[ games[i].secondChoice ]) { // if the sender is the acting player
+          // if both fighters are still active
+          // games[i].battle'em() twice
+          // emit chosen to both players and they fight more
+          // and they win
+        }
+      }
+    }
   })
 
 

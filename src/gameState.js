@@ -14,6 +14,8 @@ class GameState {
     this.rerolls[3, 3] // rerolls per player - shared between choosing spirits and upgrades
 
     this.firstChoice = coin()? '0': '1'
+    this.secondChoice = ['1', '0'][this.firstChoice] 
+    this.fightersActive = [[true, true, true], [true, true, true]]
   }
 
   moveToTeambuild() {
@@ -65,6 +67,10 @@ class GameState {
     }
 
     return newSpirit
+  }
+
+  fighterCheck(chosen) { // array like [0, 1] or [2, 2]
+    return this.fightersActive[chosen[0]] && this.fightersActive[chosen[1]]
   }
 }
 

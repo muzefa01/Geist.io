@@ -22,6 +22,7 @@ export class StartMatch extends Scene {
       "webfont",
       "https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"
     );
+    this.socket = io()
     this.load.image("copy", "/assets/geist-copy.png");
     this.load.image("resummon", "/assets/geist-resummon.png");
     this.load.image("placeholder", "/assets/geist-placeholder.png");
@@ -31,6 +32,11 @@ export class StartMatch extends Scene {
 
   create() {
     const add = this.add;
+
+    this.socket.on('log', (msg) => {
+      console.log("MSG: "+ msg)
+    })
+    
 
     this.bg = this.add
       .tileSprite(0, 0, 1280, 720, "background")
