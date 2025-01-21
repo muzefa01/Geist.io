@@ -11,7 +11,7 @@ class GameState {
     this.teams = [[], []]
     this.currentlyOffering = [{}, {}]
     this.ready = ['none', 'none']
-    this.rerolls[3, 3] // rerolls per player - shared between choosing spirits and upgrades
+    this.rerolls = [3, 3] // rerolls per player - shared between choosing spirits and upgrades
 
     this.firstChoice = coin()? '0': '1'
     this.secondChoice = ['1', '0'][this.firstChoice] 
@@ -69,8 +69,19 @@ class GameState {
     return newSpirit
   }
 
-  fighterCheck(chosen) { // array like [0, 1] or [2, 2]
+  fighterCheck(chosen) { // chosen is an array like [0, 1] or [2, 2]
     return this.fightersActive[chosen[0]] && this.fightersActive[chosen[1]]
+  }
+
+  otherFighterCheck(chosen) {
+    const others = [-1, -1]
+    for (let i in this.fightersActive) {
+      for (let j in others) {
+        if (this.fightersActive[j][i] && !(chosen[j] === i))
+          others[j] = i
+      }
+    }
+    return others
   }
 }
 
