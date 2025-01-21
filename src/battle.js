@@ -27,3 +27,49 @@ class Spirit {
         this.ticker = 0
     }
 }
+
+class Battle {
+    constructor(spirit1, spirit2) {
+        this.spirit1 = spirit1
+        this.spirit2 = spirit2
+    }
+
+    startRound() {
+        this.round++
+
+        this.spirit1.attack()
+        this.spirit2.attack()
+
+        if (this.spirit1.ticker >= 100 && this.spirit2.ticker >= 100) {
+            if (this.spirit1.ticker > this.spirit2.ticker) {
+               if (this.spirit1.attack(this.spirit2)) {
+                this.spirit1.points++
+                //function to end the battle - pending
+                return;
+               }
+               this.spirit1.resetTicker();
+               
+               if (this.spirit2.attack(this.spirit1)) {
+                this.spirit2.points++
+                //function to end the battle - pending
+                return;
+            }
+            this.spirit2.resetTicker();
+            } else {
+                if (this.spirit2.attack(this.spirit1)) {
+                    this.spirit2.points++
+                    //function to end the battle - pending
+                    return;
+                }
+                this.spirit2.resetTicker()
+
+                if(this.spirit1.attack(this.spirit2)) {
+                    this.spirit1.points++
+                    //function to end the battle - pending
+                    return;
+                }
+                this.spirit1.resetTicker()
+            }
+        }
+    }
+}
