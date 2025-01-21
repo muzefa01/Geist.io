@@ -1,17 +1,19 @@
 {
-  "name": "spirtis_game",
+  "name": "spirits_game",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "node server.js",
     "dev": "vite & node server.js",
-    "build": "vite build",
+    "build": "vite build && cp -r dist/* public/",
     "preview": "vite preview"
   },
   "devDependencies": {
     "vite": "^6.0.5"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.21.2",
     "phaser": "^3.87.0",
     "socket.io": "^4.8.1",

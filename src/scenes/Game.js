@@ -55,7 +55,7 @@ class Game extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
 
       // Setup Socket.IO
-    this.socket = io(); 
+    this.socket = io('https://geist-io.onrender.com/'); 
     }
   
     update() {
