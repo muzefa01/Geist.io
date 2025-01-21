@@ -1,14 +1,8 @@
 import { Scene } from "phaser";
 import { CharBody } from "../charBody";
 import { io } from "socket.io-client";
-// const room = getQueryParameter("room") || getRandomString(5);
-// window.history.replaceState(
-//   {},
-//   document.title,
-//   updateQueryParameter("room", room)
-// );
 
-let room = 3000;
+let room = "";
 const rand = Math.random;
 
 export class StartMatch extends Scene {
@@ -21,47 +15,65 @@ export class StartMatch extends Scene {
       "webfont",
       "https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"
     );
-    this.socket = io()
+    this.socket = io();
     this.load.image("copy", "/assets/geist-copy.png");
     this.load.image("resummon", "/assets/geist-resummon.png");
     this.load.image("placeholder", "/assets/geist-placeholder.png");
     this.load.image("stats", "/assets/geist-stats.png");
     this.load.image("head1", "assets/head1.png");
     this.load.image("start-match", "assets/geiststartmatch.png");
+    this.load.image("create-match", "assets/geist-create-match.png");
   }
 
   create() {
-    //start match button
+    WebFont.load({
+      google: {
+        families: ["IM Fell English"],
+      },
+    });
 
-    //join match functionality
     const add = this.add;
 
-    this.socket.on('log', (msg) => {
-      console.log("MSG: "+ msg)
-    })
-
-    this.socket.on('yourRoomIs', (roomCode) => {
-      room = roomCode
-      console.log(room)
-    })
-    
+    //start match button
+    this.socket.on("yourRoomIs", (roomCode) => {
+      room = roomCode;
+      console.log(room);
+      this.text1 = this.add
+        .text(285, 160, `your match code is ${room}`, {
+          fontFamily: '"IM Fell English", serif',
+          fontSize: 20,
+          color: "#ffffff",
+          fontStyle: "normal",
+        })
+        .setVisible(true);
+    });
 
     this.bg = this.add
       .tileSprite(0, 0, 1280, 720, "background")
       .setOrigin(0)
       .setScrollFactor(0, 1);
 
-    this.btnCreateRoom = this.add.text(100, 100, "createRoom", {
-      fill: "#FFFFFF",
-    });
-    this.btnCreateRoom.setInteractive();
+    this.btnCreateRoom = this.add.image(412, 250, "create-match");
+    this.btnCreateRoom.setInteractive({ useHandCursor: true });
     this.btnCreateRoom
+      .on("pointerover", () => {
+        this.btnCreateRoom.setScale(1.05).setTint(0xca7dff);
+      })
+      .on("pointerout", () => {
+        this.btnCreateRoom.setScale(1).clearTint();
+      })
       .on("pointerdown", () => {
         this.socket.emit("createRoom");
-        this.btnCreateRoom.setStyle({ fill: "#FF00FF" });
-      })
-      .on("pointerup", () => {
-        this.btnCreateRoom.setStyle({ fill: "#FFFFFF" });
+        this.btnCreateRoom.setVisible(false);
+        this.add
+          .text(265, 200, `copy and send to a friend to begin`, {
+            fontFamily: '"IM Fell English", serif',
+            fontSize: 20,
+            color: "#ffffff",
+            fontStyle: "normal",
+          })
+          .setVisible(true);
+        copyButton.setVisible(true);
       });
 
     const logo = this.add
@@ -79,28 +91,10 @@ export class StartMatch extends Scene {
         logo.setScale(1).clearTint();
       });
 
-    WebFont.load({
-      google: {
-        families: ["IM Fell English"],
-      },
-      active: function () {
-        add.text(285, 160, `your match code is ${"no"}`, {
-          fontFamily: '"IM Fell English", serif',
-          fontSize: 20,
-          color: "#ffffff",
-          fontStyle: "normal",
-        }),
-          add.text(265, 200, `copy and send to a friend to begin`, {
-            fontFamily: '"IM Fell English", serif',
-            fontSize: 20,
-            color: "#ffffff",
-            fontStyle: "normal",
-          });
-      },
-    });
     const copyButton = this.add
       .image(515, 170, "copy")
-      .setInteractive({ useHandCursor: true });
+      .setInteractive({ useHandCursor: true })
+      .setVisible(false);
 
     copyButton
       .on("pointerdown", () => {
@@ -118,19 +112,19 @@ export class StartMatch extends Scene {
         copyButton.clearTint();
       });
 
-    const resummon = this.add
-      .image(680, 400, "resummon")
-      .setScale(0.5)
-      .setInteractive({ useHandCursor: true });
+    // const resummon = this.add
+    //   .image(680, 400, "resummon")
+    //   .setScale(0.5)
+    //   .setInteractive({ useHandCursor: true });
 
-    resummon
-      .on("pointerdown", () => {
-        resummon.setTint(0xc6c6c6);
-        this.scene.start("Game");
-      })
-      .on("pointerup", () => {
-        resummon.clearTint();
-      });
+    // resummon
+    //   .on("pointerdown", () => {
+    //     resummon.setTint(0xc6c6c6);
+    //     this.scene.start("Game");
+    //   })
+    //   .on("pointerup", () => {
+    //     resummon.clearTint();
+    //   });
 
     this.placeholder = this.testChar = new CharBody(
       this,
@@ -153,20 +147,14 @@ export class StartMatch extends Scene {
       }
     );
 
-    const statsBox = this.add.image(150, 400, "stats").setScale(2.2);
+    this.placeholder.hide();
+    // const statsBox = this.add.image(150, 400, "stats").setScale(2.2);
 
-    const stats = this.add.text(
-      80,
-      300,
-      "attack = 5\n\ndefence = 6\n\nhp = 25\n\nspeed = 7"
-    );
-
-    this.btnCreateRoom = this.add.text(100, 100, 'createRoom', {fill: '#FFFFFF'})
-    this.btnCreateRoom.setInteractive()
-    this.btnCreateRoom.on('pointerdown', () => {
-      this.socket.emit('createRoom')
-      this.btnCreateRoom.setStyle({fill: '#FF00FF'})
-    }).on('pointerup', () => {this.btnCreateRoom.setStyle({fill: '#FFFFFF'})})
+    // const stats = this.add.text(
+    //   80,
+    //   300,
+    //   "attack = 5\n\ndefence = 6\n\nhp = 25\n\nspeed = 7"
+    // );
   }
 
   update() {
