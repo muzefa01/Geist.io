@@ -41,6 +41,17 @@ export class StartMatch extends Scene {
   this.choosingPos = {x: 640, y: 300} // position of StatBlock of an offered spirit
   this.offeredSpirit = null
   this.offeredStatblock = null
+
+  this.buttonFormat = function(btn) {
+    return btn
+    .on("pointerover", () => {
+      this.joinMatchBtn.setScale(1.05).setTint(0xca7dff);
+    })
+    .on("pointerout", () => {
+      this.joinMatchBtn.setScale(1).clearTint();
+    })
+    .setInteractive({ useHandCursor: true })
+  }
     
   this.updateDisplay = function(shownSpirit) {
     if (this.offeredSpirit) this.offeredSpirit.hide()
@@ -226,7 +237,7 @@ export class StartMatch extends Scene {
     //     resummon.clearTint();
     //   });
 
-    this.placeholder = this.testChar = new CharBody(
+    this.placeholder = new CharBody(
       this,
       { x: 652, y: 580 },
       {
