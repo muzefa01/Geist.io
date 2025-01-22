@@ -50,7 +50,7 @@ class GameState {
     newSpirit.stats.atk = 12 + num
     karma = coin() ? Math.floor(num/2) : 0
 
-    num = rand(6 - karma) // def 6~11
+    num = rand(6 - karma) // def 5~11
     newSpirit.stats.def = 5 + num
 
     newSpirit.attributes = {
