@@ -48,14 +48,11 @@ export class StartMatch extends Scene {
   this.offeredStatblock = null
 
   this.buttonFormat = function(btn) {
-    return btn
-    .on("pointerover", () => {
-      this.joinMatchBtn.setScale(1.05).setTint(0xca7dff);
-    })
-    .on("pointerout", () => {
-      this.joinMatchBtn.setScale(1).clearTint();
-    })
-    .setInteractive({ useHandCursor: true })
+    return btn .on("pointerover", () => {
+      btn.setScale(1.05).setTint(0xca7dff);
+    }) .on("pointerout", () => {
+      btn.setScale(1).clearTint();
+    }) .setInteractive({ useHandCursor: true })
   }
     
   this.updateDisplay = function(shownSpirit) {
@@ -122,14 +119,7 @@ export class StartMatch extends Scene {
     })
     
     this.btnCreateRoom = this.add.image(412, 250, "create-match");
-    this.btnCreateRoom.setInteractive({ useHandCursor: true });
-    this.btnCreateRoom
-      .on("pointerover", () => {
-        this.btnCreateRoom.setScale(1.05).setTint(0xca7dff);
-      })
-      .on("pointerout", () => {
-        this.btnCreateRoom.setScale(1).clearTint();
-      })
+    this.buttonFormat(this.btnCreateRoom)
       .on("pointerdown", () => {
         this.socket.emit("createRoom");
         this.btnCreateRoom.setVisible(false);
@@ -147,18 +137,10 @@ export class StartMatch extends Scene {
 
     const logo = this.add
       .image(412, 80, "logo")
-      .setInteractive({ useHandCursor: true });
-
-    logo
-      .on("pointerdown", () => {
+    this.buttonFormat(logo)
+    .on("pointerdown", () => {
         this.scene.start("Preloader");
       })
-      .on("pointerover", () => {
-        logo.setScale(1.05).setTint(0xca7dff);
-      })
-      .on("pointerout", () => {
-        logo.setScale(1).clearTint();
-      });
 
     const copyButton = this.add
       .image(525, 170, "copy")
