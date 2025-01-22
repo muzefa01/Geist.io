@@ -1,4 +1,5 @@
 import { Scene } from "phaser";
+import { CharBody } from "../charBody";
 
 export class MainMenu extends Scene {
   constructor() {
@@ -52,6 +53,7 @@ export class MainMenu extends Scene {
       .on("pointerout", () => {
         howToButton.setScale(1).clearTint();
       });
+
   }
   update() {
     this.background.tilePositionY += 0.5;

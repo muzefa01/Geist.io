@@ -92,7 +92,7 @@ class CharBody {
 
     // head
     this.headScale = this.neckWidth/100 + this.bodyWidth/150 + 0.15
-    this.head = this.owner.add.image(0, 0, 'head1');
+    this.head = this.owner.add.image(0, 0, `head${attributes.headType}`);
     this.updateHead()
     this.head.setDepth(5)
     this.head.scale = this.headScale

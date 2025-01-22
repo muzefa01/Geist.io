@@ -8,6 +8,7 @@ let room = "";
 const rand = Math.random;
 const bodies = []
 
+
 export class StartMatch extends Scene {
   constructor() {
     super("StartMatch");
@@ -25,6 +26,11 @@ export class StartMatch extends Scene {
     //this.socket = io('https://geist-io.onrender.com/');
     this.socket = io();
 
+    this.load.image('head1', 'assets/head1.png');
+    this.load.image('head2', 'assets/head2.png');
+    this.load.image('head3', 'assets/head3.png');
+    this.load.image('head4', 'assets/head4.png');
+    this.load.image('head5', 'assets/head5.png');
     this.load.image("copy", "/assets/geist-copy.png");
     this.load.image("resummon", "/assets/geist-resummon.png");
 
@@ -43,6 +49,27 @@ export class StartMatch extends Scene {
         families: ["IM Fell English"],
       },
     });
+
+  this.choosingPos = {x: 640, y: 300} // position of StatBlock of an offered spirit
+  this.offeredSpirit = null
+  this.offeredStatblock = null
+
+  this.buttonFormat = function(btn) {
+    return btn .on("pointerover", () => {
+      btn.setScale(1.05).setTint(0xca7dff);
+    }) .on("pointerout", () => {
+      btn.setScale(1).clearTint();
+    }) .setInteractive({ useHandCursor: true })
+  }
+    
+  this.updateDisplay = function(shownSpirit) {
+    if (this.offeredSpirit) this.offeredSpirit.hide()
+    this.offeredSpirit = new CharBody (this, {x: 400, y: 580}, shownSpirit.attributes)
+    bodies.push(this.offeredSpirit)
+
+    if (this.offeredStatblock) this.offeredStatblock.hide()
+    this.offeredStatblock = new StatBlock(this, this.choosingPos, shownSpirit)
+  }
 
     const add = this.add;
 
@@ -66,8 +93,6 @@ export class StartMatch extends Scene {
     });
 
     this.plrIndex = -1
-    this.statBlocks = []
-    this.choosingPos = {x: 640, y: 300} // position of StatBlock of an offered spirit
 
     this.socket.on('offerSpirit', (spirit, mode, index) => {
       if (mode === 'start') {
@@ -136,9 +161,15 @@ export class StartMatch extends Scene {
         //function for Resummons Counter
 
       } else if (mode === 'reroll') {
-
+        console.log(spirit)
+        this.updateDisplay(spirit)
+        // reroll counter --
       } else if (mode === 'confirmed') {
-
+        if (this.teams[this.plrIndex].length < 3) {
+          this.updateDisplay(spirit);
+      } else {
+          console.log("Team is full!");
+      }
       }
     })
 
@@ -175,14 +206,7 @@ export class StartMatch extends Scene {
     })
     
     this.btnCreateRoom = this.add.image(412, 250, "create-match");
-    this.btnCreateRoom.setInteractive({ useHandCursor: true });
-    this.btnCreateRoom
-      .on("pointerover", () => {
-        this.btnCreateRoom.setScale(1.05).setTint(0xca7dff);
-      })
-      .on("pointerout", () => {
-        this.btnCreateRoom.setScale(1).clearTint();
-      })
+    this.buttonFormat(this.btnCreateRoom)
       .on("pointerdown", () => {
         this.socket.emit("createRoom");
         this.btnCreateRoom.setVisible(false);
@@ -196,23 +220,14 @@ export class StartMatch extends Scene {
           })
           .setVisible(true);
         copyButton.setVisible(true);
-        this.placeholder.show();
       });
 
     const logo = this.add
       .image(412, 80, "logo")
-      .setInteractive({ useHandCursor: true });
-
-    logo
-      .on("pointerdown", () => {
+    this.buttonFormat(logo)
+    .on("pointerdown", () => {
         this.scene.start("Preloader");
       })
-      .on("pointerover", () => {
-        logo.setScale(1.05).setTint(0xca7dff);
-      })
-      .on("pointerout", () => {
-        logo.setScale(1).clearTint();
-      });
 
     const copyButton = this.add
       .image(525, 170, "copy")
@@ -295,9 +310,9 @@ export class StartMatch extends Scene {
     //     resummon.clearTint();
     //   });
 
-    this.placeholder = this.testChar = new CharBody(
+    this.placeholder = new CharBody(
       this,
-      { x: 412, y: 580 },
+      { x: 700, y: 580 },
       {
         height: 150 + rand() * 120, // HP, SPD
         bodyWidth: 30 + rand() * 30, // HP, DEF
