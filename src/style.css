@@ -14,8 +14,8 @@ body {
 
 @media screen and (max-width: 600px) {
   body {
-    transform: scale(0.5);
-    width: auto;
+    transform: scale(0.9);
+    width: 119%;
     display: flex;
     justify-content: center;
   }
@@ -23,7 +23,7 @@ body {
 
 @media screen and (min-width: 602px) {
   body {
-    transform: scale(0.5);
+    transform: scale(0.9);
   }
 }
 
