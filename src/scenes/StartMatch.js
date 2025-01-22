@@ -96,7 +96,9 @@ export class StartMatch extends Scene {
         this.updateDisplay(spirit)
 
       } else if (mode === 'reroll') {
-
+        console.log(spirit)
+        this.updateDisplay(spirit)
+        // reroll counter --
       } else if (mode === 'confirmed') {
 
       }
