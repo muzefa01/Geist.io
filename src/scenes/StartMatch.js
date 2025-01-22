@@ -46,6 +46,14 @@ export class StartMatch extends Scene {
   this.choosingPos = {x: 640, y: 300} // position of StatBlock of an offered spirit
   this.offeredSpirit = null
   this.offeredStatblock = null
+
+  this.buttonFormat = function(btn) {
+    return btn .on("pointerover", () => {
+      btn.setScale(1.05).setTint(0xca7dff);
+    }) .on("pointerout", () => {
+      btn.setScale(1).clearTint();
+    }) .setInteractive({ useHandCursor: true })
+  }
     
   this.updateDisplay = function(shownSpirit) {
     if (this.offeredSpirit) this.offeredSpirit.hide()
@@ -111,14 +119,7 @@ export class StartMatch extends Scene {
     })
     
     this.btnCreateRoom = this.add.image(412, 250, "create-match");
-    this.btnCreateRoom.setInteractive({ useHandCursor: true });
-    this.btnCreateRoom
-      .on("pointerover", () => {
-        this.btnCreateRoom.setScale(1.05).setTint(0xca7dff);
-      })
-      .on("pointerout", () => {
-        this.btnCreateRoom.setScale(1).clearTint();
-      })
+    this.buttonFormat(this.btnCreateRoom)
       .on("pointerdown", () => {
         this.socket.emit("createRoom");
         this.btnCreateRoom.setVisible(false);
@@ -136,18 +137,10 @@ export class StartMatch extends Scene {
 
     const logo = this.add
       .image(412, 80, "logo")
-      .setInteractive({ useHandCursor: true });
-
-    logo
-      .on("pointerdown", () => {
+    this.buttonFormat(logo)
+    .on("pointerdown", () => {
         this.scene.start("Preloader");
       })
-      .on("pointerover", () => {
-        logo.setScale(1.05).setTint(0xca7dff);
-      })
-      .on("pointerout", () => {
-        logo.setScale(1).clearTint();
-      });
 
     const copyButton = this.add
       .image(525, 170, "copy")
@@ -216,7 +209,21 @@ export class StartMatch extends Scene {
           });
       });
 
-    this.placeholder = this.testChar = new CharBody(
+    // const resummon = this.add
+    //   .image(680, 400, "resummon")
+    //   .setScale(0.5)
+    //   .setInteractive({ useHandCursor: true });
+
+    // resummon
+    //   .on("pointerdown", () => {
+    //     resummon.setTint(0xc6c6c6);
+    //     this.scene.start("Game");
+    //   })
+    //   .on("pointerup", () => {
+    //     resummon.clearTint();
+    //   });
+
+    this.placeholder = new CharBody(
       this,
       { x: 700, y: 580 },
       {
