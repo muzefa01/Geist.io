@@ -23,8 +23,8 @@ export class StartMatch extends Scene {
     );
 
     // use io('https...') to commit for deploy, and io() for testing
-    this.socket = io('https://geist-io.onrender.com/');
-    // this.socket = io();
+    // this.socket = io('https://geist-io.onrender.com/');
+    this.socket = io();
 
     this.load.image('head1', 'assets/head1.png');
     this.load.image('head2', 'assets/head2.png');
@@ -53,9 +53,13 @@ export class StartMatch extends Scene {
   this.choosingPos = {x: 640, y: 300} // position of StatBlock of an offered spirit
   this.offeredSpirit = null
   this.offeredStatblock = null
+  this.statBlocks = [];
+  this.team = [];
+  this.plrIndex = -1;
 
   this.buttonFormat = function(btn) {
-    return btn .on("pointerover", () => {
+    return btn
+    .on("pointerover", () => {
       btn.setScale(1.05).setTint(0xca7dff);
     }) .on("pointerout", () => {
       btn.setScale(1).clearTint();
