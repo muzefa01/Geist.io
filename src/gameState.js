@@ -57,7 +57,7 @@ class GameState {
       height: 50 + 2*newSpirit.stats.hp + 8*newSpirit.stats.spd, // SPD, HP - 158~216
       bodyWidth: -5 + Math.floor(1.5*newSpirit.stats.hp) + 1*newSpirit.stats.def, // HP, DEF
       neckBaseRatio: 0.06*newSpirit.stats.def, // DEF
-      leanForward: (newSpirit.stats.atk-12)**2/18, // ATK
+      leanForward: (newSpirit.stats.atk-12)**2/2, // ATK
       
       armLengthRatio: 0.1+0.05*newSpirit.stats.spd, // SPD
       armWidthRatio: -0.3 + (newSpirit.stats.def + newSpirit.stats.atk)*0.03, // ATK, DEF

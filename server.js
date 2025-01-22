@@ -104,7 +104,7 @@ io.on('connection', (socket) => {
           if (games[i].teams[j].length < 3) {
               games[i].teams[j].push(games[i].currentlyOffering[j])
               io.to(socket.id).emit('confirmSpirit', games[i].currentlyOffering[j], () => {
-
+                // ABOVE SIGNAL MAY GO UNUSED
                 if (games[i].teams[j].length < 3) { // team still not full after pushing to team?
                   games[i].currentlyOffering[j] = games[i].offerSpirit()
                   io.to(games[i].plr[j]).emit('offerSpirit', games[i].currentlyOffering[j], 'confirmed') 
