@@ -22,6 +22,11 @@ export class StartMatch extends Scene {
     // this.socket = io('https://geist-io.onrender.com/');
     this.socket = io();
 
+    this.load.image('head1', 'assets/head1.png');
+    this.load.image('head2', 'assets/head2.png');
+    this.load.image('head3', 'assets/head3.png');
+    this.load.image('head4', 'assets/head4.png');
+    this.load.image('head5', 'assets/head5.png');
     this.load.image("copy", "/assets/geist-copy.png");
     this.load.image("resummon", "/assets/geist-resummon.png");
     this.load.image("stats", "/assets/geist-stats.png");
@@ -138,7 +143,6 @@ export class StartMatch extends Scene {
           })
           .setVisible(true);
         copyButton.setVisible(true);
-        this.placeholder.hide();
       });
 
     const logo = this.add
@@ -239,7 +243,7 @@ export class StartMatch extends Scene {
 
     this.placeholder = new CharBody(
       this,
-      { x: 652, y: 580 },
+      { x: 700, y: 580 },
       {
         height: 150 + rand() * 120, // HP, SPD
         bodyWidth: 30 + rand() * 30, // HP, DEF
