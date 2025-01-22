@@ -72,3 +72,5 @@ class Battle {
         console.log(`${winner.name} wins the battle with ${winner.points} points!`);
     }
 }
+
+export { Spirit, Battle }
