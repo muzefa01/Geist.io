@@ -22,6 +22,11 @@ export class StartMatch extends Scene {
     // this.socket = io('https://geist-io.onrender.com/');
     this.socket = io();
 
+    this.load.image('head1', 'assets/head1.png');
+    this.load.image('head2', 'assets/head2.png');
+    this.load.image('head3', 'assets/head3.png');
+    this.load.image('head4', 'assets/head4.png');
+    this.load.image('head5', 'assets/head5.png');
     this.load.image("copy", "/assets/geist-copy.png");
     this.load.image("resummon", "/assets/geist-resummon.png");
     this.load.image("stats", "/assets/geist-stats.png");
