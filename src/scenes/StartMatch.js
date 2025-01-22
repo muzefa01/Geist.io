@@ -100,7 +100,11 @@ export class StartMatch extends Scene {
         this.updateDisplay(spirit)
         // reroll counter --
       } else if (mode === 'confirmed') {
-
+        if (this.teams[this.plrIndex].length < 3) {
+          this.updateDisplay(spirit);
+      } else {
+          console.log("Team is full!");
+      }
       }
     })
 
