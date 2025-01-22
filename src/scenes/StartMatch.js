@@ -6,7 +6,6 @@ import { StatBlock } from "../statBlock";
 
 let room = "";
 const rand = Math.random;
-const bodies = []
 
 
 export class StartMatch extends Scene {
@@ -46,6 +45,7 @@ export class StartMatch extends Scene {
   this.choosingPos = {x: 640, y: 300} // position of StatBlock of an offered spirit
   this.offeredSpirit = null
   this.offeredStatblock = null
+  this.bodies = []
 
   this.buttonFormat = function(btn) {
     return btn .on("pointerover", () => {
@@ -58,7 +58,7 @@ export class StartMatch extends Scene {
   this.updateDisplay = function(shownSpirit) {
     if (this.offeredSpirit) this.offeredSpirit.hide()
     this.offeredSpirit = new CharBody (this, {x: 400, y: 580}, shownSpirit.attributes)
-    bodies.push(this.offeredSpirit)
+    this.bodies.push(this.offeredSpirit)
 
     if (this.offeredStatblock) this.offeredStatblock.hide()
     this.offeredStatblock = new StatBlock(this, this.choosingPos, shownSpirit)
@@ -91,7 +91,6 @@ export class StartMatch extends Scene {
       if (mode === 'start') {
         this.plrIndex = index
         console.log(spirit)
-        //display offering
         this.placeholder.hide()
         this.updateDisplay(spirit)
 
@@ -254,8 +253,8 @@ export class StartMatch extends Scene {
   update() {
     this.bg.tilePositionY += 0.5;
     this.placeholder.frameAdvance();
-    for (let i in bodies) {
-      bodies[i].frameAdvance()
+    for (let i in this.bodies) {
+      this.bodies[i].frameAdvance()
     }
   }
 }
