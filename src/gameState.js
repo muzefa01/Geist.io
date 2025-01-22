@@ -13,7 +13,7 @@ class GameState {
     this.ready = ['none', 'none']
     this.rerolls = [3, 3] // rerolls per player - shared between choosing spirits and upgrades
 
-    this.firstChoice = coin()? '0': '1'
+    this.firstChoice = coin()? '1': '1'
     this.secondChoice = ['1', '0'][this.firstChoice] 
     this.fightersActive = [[true, true, true], [true, true, true]]
   }
@@ -32,6 +32,7 @@ class GameState {
         hp: 0,
         atk: 0,
         def: 0,
+        initiative: Math.random()
       },
       upgrade: "none"
     }
@@ -62,9 +63,10 @@ class GameState {
       armLengthRatio: 0.1+0.05*newSpirit.stats.spd, // SPD
       armWidthRatio: -0.3 + (newSpirit.stats.def + newSpirit.stats.atk)*0.03, // ATK, DEF
 
-      animSpeed: (newSpirit.stats.spd - 2) * 0.15, // SPD
-      headType: 1 + rand(0)
+      animSpeed: (newSpirit.stats.spd) * 0.08, // SPD
+      headType: 1 + rand(5 - 1)
     }
+    newSpirit.attributes.leanForward *= newSpirit.attributes.height / 150
 
     return newSpirit
   }

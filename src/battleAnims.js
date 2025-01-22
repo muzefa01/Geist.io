@@ -14,9 +14,10 @@ class BattleAnims {
     this.ongoing = false
     this.spiritHp = []
     this.tickers = [0, 0]
-    this.tickThreshold = 300
+    this.tickThreshold = 500
 
-    for (i in this.spirits) {
+    console.log(this.spirits)
+    for (let i in this.spirits) {
       const stats = this.spirits[i].stats
       this.fightSpirits.push(new Spirit("nameless", stats.spd, stats.atk, stats.def, stats.hp))
     }
@@ -36,7 +37,7 @@ class BattleAnims {
         this.bodyCentres[i],
         this.spirits[i].attributes
       ))
-      this.spiritBodies[i].scale.x = sides[i] * -1
+      this.spiritBodies[i].scale.x = sides[i] * 1
       this.owner.bodies.push(this.spiritBodies[i])
 
       this.spiritHp.push(this.spirits[i].stats.hp)
@@ -53,11 +54,19 @@ class BattleAnims {
   update() {
     if (this.ongoing) {
       for (let i in this.spirits) {
-        this.tickers[i] += this.spirits.stats.spd
+        this.tickers[i] += this.spirits[i].stats.spd
       }
       for (let i in this.spirits) {
         if (this.tickers[i] >= this.tickThreshold && this.tickers[opp(i)] < this.tickThreshold) {
           this.attack(i)
+        }
+
+        if (this.tickers[i] >= this.tickThreshold && this.tickers[opp(i)] > this.tickThreshold) {
+          if (this.spirits[i].stats.initiative > this.spirits[opp(i)].stats.initiative) {
+            this.attack(i)
+          } else {
+            this.attack(opp(i))
+          }
         }
       }
 
@@ -66,17 +75,18 @@ class BattleAnims {
 
   attack(i) {
     this.ongoing = false
-    this.spiritHp[opp(i)] -= Math.max(this.spirits[i].atk - this.spirits[opp(i)].def, 0)
+    this.spiritHp[opp(i)] -= Math.max(this.spirits[i].stats.atk - this.spirits[opp(i)].stats.def, 0)
     this.updateBars()
-    console.log(i +" ATTACKS,"+ opp(i) +"DOWN TO ["+ this.spiritHp[opp(i)] +"]")
+    console.log(i +" ATTACKS, "+ opp(i) +" DOWN TO ["+ this.spiritHp[opp(i)] +"]")
+    this.tickers[i] -= this.tickThreshold
     if (this.spiritHp[opp(i)] <= 0) {
       console.log("IT'S OVER")
       setTimeout(() => {
         this.ongoing = false
         this.spiritBodies[0].hide()
         this.spiritBodies[1].hide()
-        this.hpBars[0].hide()
-        this.hpBars[1].hide()
+        this.hpBars[0].clear()
+        this.hpBars[1].clear()
         this.onComplete(i) // winner
       }, 500)
     } else {

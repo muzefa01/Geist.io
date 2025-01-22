@@ -1,5 +1,5 @@
 class StatBlock {
-  constructor(owner, pos, spirit) {
+  constructor(owner, pos, spirit, headOn = true) {
     this.owner = owner
     this.stats = spirit.stats
     this.headType = spirit.attributes.headType
@@ -19,15 +19,37 @@ class StatBlock {
         }
       ))
     }
-
+    if (headOn) {
+      this.head = this.owner.add.image(this.pos.x-60, this.pos.y+20, 'head'+this.headType)
+      this.head.setScale(0.75).setRotation(-0.15)
+    }
 
   }
 
   destroy() {
+    const statRef = ["atk", "def", "hp", "spd"]
     for (let i in statRef) {
       this.texts[i].destroy()
     }
+    if (this.head) this.head.destroy()
   }
+
+  hide() {
+    const statRef = ["atk", "def", "hp", "spd"]
+    for (let i in statRef) {
+      this.texts[i].setVisible(false)
+    }
+    if (this.head) this.head.setVisible(false)
+  }
+
+  show() {
+    const statRef = ["atk", "def", "hp", "spd"]
+    for (let i in statRef) {
+      this.texts[i].setVisible(true)
+    }
+    if (this.head) this.head.setVisible(true)
+  }
+  
 }
 
 export { StatBlock }
