@@ -127,7 +127,6 @@ export class StartMatch extends Scene {
           })
           .setVisible(true);
         copyButton.setVisible(true);
-        this.placeholder.hide();
       });
 
     const logo = this.add
@@ -212,23 +211,9 @@ export class StartMatch extends Scene {
           });
       });
 
-    // const resummon = this.add
-    //   .image(680, 400, "resummon")
-    //   .setScale(0.5)
-    //   .setInteractive({ useHandCursor: true });
-
-    // resummon
-    //   .on("pointerdown", () => {
-    //     resummon.setTint(0xc6c6c6);
-    //     this.scene.start("Game");
-    //   })
-    //   .on("pointerup", () => {
-    //     resummon.clearTint();
-    //   });
-
     this.placeholder = this.testChar = new CharBody(
       this,
-      { x: 652, y: 580 },
+      { x: 700, y: 580 },
       {
         height: 150 + rand() * 120, // HP, SPD
         bodyWidth: 30 + rand() * 30, // HP, DEF
