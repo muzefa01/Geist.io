@@ -98,7 +98,11 @@ export class StartMatch extends Scene {
       } else if (mode === 'reroll') {
 
       } else if (mode === 'confirmed') {
-
+        if (this.teams[this.plrIndex].length < 3) {
+          this.updateDisplay(spirit);
+      } else {
+          console.log("Team is full!");
+      }
       }
     })
 
