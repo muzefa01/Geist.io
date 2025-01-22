@@ -8,6 +8,7 @@ let room = "";
 const rand = Math.random;
 const bodies = []
 
+
 export class StartMatch extends Scene {
   constructor() {
     super("StartMatch");
@@ -18,9 +19,8 @@ export class StartMatch extends Scene {
       "https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"
     );
 
-    // use io('https...') to commit for deploy, and io() for testing
-    this.socket = io('https://geist-io.onrender.com/');
-    // this.socket = io();
+    // this.socket = io('https://geist-io.onrender.com/');
+    this.socket = io();
 
     this.load.image("copy", "/assets/geist-copy.png");
     this.load.image("resummon", "/assets/geist-resummon.png");
@@ -37,6 +37,19 @@ export class StartMatch extends Scene {
         families: ["IM Fell English"],
       },
     });
+
+  this.choosingPos = {x: 640, y: 300} // position of StatBlock of an offered spirit
+  this.offeredSpirit = null
+  this.offeredStatblock = null
+    
+  this.updateDisplay = function(shownSpirit) {
+    if (this.offeredSpirit) this.offeredSpirit.hide()
+    this.offeredSpirit = new CharBody (this, {x: 400, y: 580}, shownSpirit.attributes)
+    bodies.push(this.offeredSpirit)
+
+    if (this.offeredStatblock) this.offeredStatblock.hide()
+    this.offeredStatblock = new StatBlock(this, this.choosingPos, shownSpirit)
+  }
 
     const add = this.add;
 
@@ -60,8 +73,6 @@ export class StartMatch extends Scene {
     });
 
     this.plrIndex = -1
-    this.statBlocks = []
-    this.choosingPos = {x: 640, y: 300} // position of StatBlock of an offered spirit
 
     this.socket.on('offerSpirit', (spirit, mode, index) => {
       if (mode === 'start') {
@@ -69,10 +80,7 @@ export class StartMatch extends Scene {
         console.log(spirit)
         //display offering
         this.placeholder.hide()
-        this.offeredSpirit = new CharBody (this, {x: 400, y: 500}, spirit.attributes)
-        bodies.push(offeredSpirit)
-
-        this.statBlocks.push(new StatBlock(this, this.choosingPos, spirit))
+        this.updateDisplay(spirit)
 
       } else if (mode === 'reroll') {
 
@@ -119,7 +127,7 @@ export class StartMatch extends Scene {
           })
           .setVisible(true);
         copyButton.setVisible(true);
-        this.placeholder.show();
+        this.placeholder.hide();
       });
 
     const logo = this.add
@@ -220,7 +228,7 @@ export class StartMatch extends Scene {
 
     this.placeholder = this.testChar = new CharBody(
       this,
-      { x: 412, y: 580 },
+      { x: 652, y: 580 },
       {
         height: 150 + rand() * 120, // HP, SPD
         bodyWidth: 30 + rand() * 30, // HP, DEF

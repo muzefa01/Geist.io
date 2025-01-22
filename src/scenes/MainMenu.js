@@ -1,4 +1,5 @@
 import { Scene } from "phaser";
+import { CharBody } from "../charBody";
 
 export class MainMenu extends Scene {
   constructor() {
@@ -52,8 +53,28 @@ export class MainMenu extends Scene {
       .on("pointerout", () => {
         howToButton.setScale(1).clearTint();
       });
+
+      this.placeholder = new CharBody(
+        this,
+        { x: 700, y: 580 },
+        {
+          height: 150 + rand() * 120, // HP, SPD
+          bodyWidth: 30 + rand() * 30, // HP, DEF
+          neckBaseRatio: 0.28 + rand() * 0.37, // DEF
+          leanForward: rand() ** 2 * 20, // ATK
+          neckType: 1, // DEF
+  
+          armLengthRatio: 0.5 + rand() * 0.2, // SPD
+          armWidthRatio: 0.35 + rand() * 0.3, // ATK, DEF
+  
+          animSpeed: 0.8 + rand() * 0.4,
+          
+          headType: 1,
+        }
+      );
   }
   update() {
     this.background.tilePositionY += 0.5;
+    this.placeholder.frameAdvance()
   }
 }
