@@ -11,6 +11,9 @@ const bodies = []
 export class StartMatch extends Scene {
   constructor() {
     super("StartMatch");
+    // Initialize remaining resummons
+    this.remainingresummons = 3;
+
   }
   preload() {
     this.load.script(
@@ -19,11 +22,14 @@ export class StartMatch extends Scene {
     );
 
     // use io('https...') to commit for deploy, and io() for testing
-    this.socket = io('https://geist-io.onrender.com/');
-    // this.socket = io();
+    //this.socket = io('https://geist-io.onrender.com/');
+    this.socket = io();
 
     this.load.image("copy", "/assets/geist-copy.png");
     this.load.image("resummon", "/assets/geist-resummon.png");
+
+    //this.load.image("recruit", "/assets/geist-recruit.png");
+
     this.load.image("stats", "/assets/geist-stats.png");
     this.load.image("head1", "assets/head1.png");
     this.load.image("start-match", "assets/geiststartmatch.png");
@@ -67,12 +73,67 @@ export class StartMatch extends Scene {
       if (mode === 'start') {
         this.plrIndex = index
         console.log(spirit)
+
+        if(this.text1) this.text1.setVisible(false)
+
         //display offering
         this.placeholder.hide()
         this.offeredSpirit = new CharBody (this, {x: 400, y: 500}, spirit.attributes)
-        bodies.push(offeredSpirit)
+        bodies.push(this.offeredSpirit)
 
         this.statBlocks.push(new StatBlock(this, this.choosingPos, spirit))
+
+       // Add Recruit text button
+        const recruitText = this.add
+        .text(600, 500, "Recruit", {
+        fontFamily: '"IM Fell English", serif',
+        fontSize: 24,
+        color: "#ffffff",
+        fontStyle: "bold",
+      })
+        .setInteractive({ useHandCursor: true });
+
+      recruitText
+      .on("pointerdown", () => {
+      this.socket.emit('recruitSpirit');
+      recruitText.setStyle({ color: "#ca7dff" });
+    })
+      .on("pointerover", () => {
+      recruitText.setStyle({ color: "#ca7dff" });   
+    })
+      .on("pointerout", () => {
+      recruitText.setStyle({ color: "#ffffff" });
+    });
+
+    //function for Recruit text button
+
+        // Add Resummon button
+        const resummonButton = this.add
+        .image(200, 500, "resummon")
+        .setInteractive({ useHandCursor: true })
+        .setScale(0.5);
+
+      resummonButton
+        .on("pointerdown", () => {
+          if (this.remainingResummons > 0) {
+            this.remainingResummons--;
+            this.socket.emit('rerollSpirit');
+            this.updateResummonCounter();
+          }
+        })
+        .on("pointerover", () => resummonButton.setTint(0xca7dff))
+        .on("pointerout", () => resummonButton.clearTint());
+
+        //function for Resummon button
+
+        // Add Resummons Counter
+        this.resummonCounter = this.add.text(550, 450, `Resummons Counter: ${this.remainingResummons}`, {
+          fontFamily: '"IM Fell English", serif',
+          fontSize: 20,
+          color: "#ffffff",
+        });
+
+        //function for Resummons Counter
 
       } else if (mode === 'reroll') {
 
@@ -81,8 +142,24 @@ export class StartMatch extends Scene {
       }
     })
 
-    this.socket.on('confirmSpirit', (chosenSpirit) => { // spirit for the team
-      
+    
+
+    this.socket.on('confirmSpirit', (chosenSpirit) => { 
+      // spirit for the team
+
+      //initialise array 
+      if(!this.team) this.team = []
+      //push to array
+      this.team.push(chosenSpirit)
+      //calculate the position
+      const xOffset = 100; 
+      const yOffset = 50; 
+      const statBlockX = xOffset;
+      const statBlockY = 100 + this.team.length * yOffset;
+      //display confirmed spirit
+      const statBlock = new StatBlock(this, { x: statBlockX, y: statBlockY }, chosenSpirit);
+      this.statBlocks.push(statBlock);
+      console.log(`Spirit added to team:`, chosenSpirit);
     })
 
     this.socket.on('beginBattles', (teams, whoGoesFirst) => { // whoGoesFirst is 0 or 1, corresponding to this.plrIndex
@@ -240,11 +317,17 @@ export class StartMatch extends Scene {
     //this.placeholder.hide();
   }
 
+  updateResummonCounter() {
+    if (this.resummonCounter) {
+      this.resummonCounter.setText(`Resummons: ${this.remainingResummons}`);
+    }
+  }
+
   update() {
     this.bg.tilePositionY += 0.5;
     this.placeholder.frameAdvance();
     for (let i in bodies) {
-      bodies[i].frameAdvance()
+      bodies[i].frameAdvance();
     }
   }
 }
