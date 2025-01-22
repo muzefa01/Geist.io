@@ -45,7 +45,6 @@ const games = []
 */
 
 io.on('connection', (socket) => {
-  console.log(`Player connected: ${socket.id}`);
   const player = socket
   setTimeout(() => {
     // console.log(socket.rooms)
@@ -58,7 +57,9 @@ io.on('connection', (socket) => {
     if (socket.rooms.size === 1) { // each player is in a solo room by default, so allowed to join 1 more
       const roomCode = validRoomCode()
       socket.join(roomCode)
-      games.push(new GameState(roomCode))
+      const newGame = new GameState(roomCode)
+      newGame.plr[0] = socket.id
+      games.push(newGame)
       console.log(`Room ${roomCode} has been created.`)
       io.to(socket.id).emit("yourRoomIs", roomCode)
     }

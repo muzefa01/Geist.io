@@ -2,6 +2,7 @@ import { Scene } from "phaser";
 import { CharBody } from "../charBody";
 import { io } from "socket.io-client";
 import { GameState } from "../gameState";
+import { StatBlock } from "../statBlock";
 
 let room = "";
 const rand = Math.random;
@@ -18,8 +19,8 @@ export class StartMatch extends Scene {
     );
 
     // use io('https...') to commit for deploy, and io() for testing
-    //this.socket = io('https://geist-io.onrender.com/');
-    this.socket = io();
+    this.socket = io('https://geist-io.onrender.com/');
+    // this.socket = io();
 
     this.load.image("copy", "/assets/geist-copy.png");
     this.load.image("resummon", "/assets/geist-resummon.png");
@@ -58,19 +59,44 @@ export class StartMatch extends Scene {
         .setVisible(true);
     });
 
-    let plrIndex = -1
+    this.plrIndex = -1
+    this.statBlocks = []
+    this.choosingPos = {x: 640, y: 300} // position of StatBlock of an offered spirit
 
     this.socket.on('offerSpirit', (spirit, mode, index) => {
-      if(mode === 'start'){
-        plrIndex = index
+      if (mode === 'start') {
+        this.plrIndex = index
         console.log(spirit)
         //display offering
         this.placeholder.hide()
-        let offeredSpirit = new CharBody (this, {x: 400, y: 500}, spirit.attributes)
+        this.offeredSpirit = new CharBody (this, {x: 400, y: 500}, spirit.attributes)
         bodies.push(offeredSpirit)
+
+        this.statBlocks.push(new StatBlock(this, this.choosingPos, spirit))
+
+      } else if (mode === 'reroll') {
+
+      } else if (mode === 'confirmed') {
+
       }
     })
 
+    this.socket.on('confirmSpirit', (chosenSpirit) => { // spirit for the team
+      
+    })
+
+    this.socket.on('beginBattles', (teams, whoGoesFirst) => { // whoGoesFirst is 0 or 1, corresponding to this.plrIndex
+
+    })
+
+    this.socket.on('firstBattle', (firstFighters) => { // eg. array [2, 0], meaning firstTeam[2] fights secondTeam[0]
+      
+    })
+
+    this.socket.on('secondThirdBattles', (secondFighters, thirdFighters) => {
+      
+    })
+    
     this.btnCreateRoom = this.add.image(412, 250, "create-match");
     this.btnCreateRoom.setInteractive({ useHandCursor: true });
     this.btnCreateRoom
@@ -192,13 +218,10 @@ export class StartMatch extends Scene {
     //     resummon.clearTint();
     //   });
 
-    const testGame = new GameState("0000")
-    console.log(testGame)
-    const testAttribs = testGame.offerSpirit().attributes
     this.placeholder = this.testChar = new CharBody(
       this,
       { x: 412, y: 580 },
-      /*{
+      {
         height: 150 + rand() * 120, // HP, SPD
         bodyWidth: 30 + rand() * 30, // HP, DEF
         neckBaseRatio: 0.28 + rand() * 0.37, // DEF
@@ -207,14 +230,11 @@ export class StartMatch extends Scene {
 
         armLengthRatio: 0.5 + rand() * 0.2, // SPD
         armWidthRatio: 0.35 + rand() * 0.3, // ATK, DEF
-        weaponGrip: 1, // ATK, SPD
 
         animSpeed: 0.8 + rand() * 0.4,
-
-        weaponType: 1,
+        
         headType: 1,
-      }*/
-      testAttribs
+      }
     );
 
     //this.placeholder.hide();
