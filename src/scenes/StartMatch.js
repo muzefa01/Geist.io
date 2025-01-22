@@ -23,8 +23,8 @@ export class StartMatch extends Scene {
     );
 
     // use io('https...') to commit for deploy, and io() for testing
-    this.socket = io('https://geist-io.onrender.com/');
-    // this.socket = io();
+    //this.socket = io('https://geist-io.onrender.com/');
+    this.socket = io();
 
     this.load.image('head1', 'assets/head1.png');
     this.load.image('head2', 'assets/head2.png');
@@ -34,7 +34,7 @@ export class StartMatch extends Scene {
     this.load.image("copy", "/assets/geist-copy.png");
     this.load.image("resummon", "/assets/geist-resummon.png");
 
-    //this.load.image("recruit", "/assets/geist-recruit.png");
+    this.load.image("recruit", "/assets/geist-recruit.png");
 
     this.load.image("stats", "/assets/geist-stats.png");
     this.load.image("head1", "assets/head1.png");
@@ -53,6 +53,9 @@ export class StartMatch extends Scene {
   this.choosingPos = {x: 640, y: 300} // position of StatBlock of an offered spirit
   this.offeredSpirit = null
   this.offeredStatblock = null
+  this.statBlock = [];
+  this.team = []
+  this.plrIndex = -1
 
   this.buttonFormat = function(btn) {
     return btn .on("pointerover", () => {
@@ -106,31 +109,22 @@ export class StartMatch extends Scene {
         this.offeredSpirit = new CharBody (this, {x: 400, y: 500}, spirit.attributes)
         bodies.push(this.offeredSpirit)
 
-        this.statBlocks.push(new StatBlock(this, this.choosingPos, spirit))
+        //this.statBlocks.push(new StatBlock(this, this.choosingPos, spirit))
 
-       // Add Recruit text button
-        const recruitText = this.add
-        .text(600, 500, "Recruit", {
-        fontFamily: '"IM Fell English", serif',
-        fontSize: 24,
-        color: "#ffffff",
-        fontStyle: "bold",
-      })
-        .setInteractive({ useHandCursor: true });
+        // Add Recruit button
+        const recruitButton = this.add
+          .image(600, 500, "recruit")
+          .setInteractive({ useHandCursor: true })
+          .setScale(0.5);
 
-      recruitText
-      .on("pointerdown", () => {
-      this.socket.emit('recruitSpirit');
-      recruitText.setStyle({ color: "#ca7dff" });
-    })
-      .on("pointerover", () => {
-      recruitText.setStyle({ color: "#ca7dff" });   
-    })
-      .on("pointerout", () => {
-      recruitText.setStyle({ color: "#ffffff" });
-    });
+        recruitButton
+          .on("pointerdown", () => {
+            this.socket.emit('recruitSpirit');
+          })
+          .on("pointerover", () => recruitButton.setTint(0xca7dff))
+          .on("pointerout", () => recruitButton.clearTint());
 
-    //function for Recruit text button
+        //function for Recruit text button
 
         // Add Resummon button
         const resummonButton = this.add
@@ -176,7 +170,7 @@ export class StartMatch extends Scene {
     
 
     this.socket.on('confirmSpirit', (chosenSpirit) => { 
-      // spirit for the team
+      //spirit for the team
 
       //initialise array 
       if(!this.team) this.team = []

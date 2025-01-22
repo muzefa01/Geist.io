@@ -7,8 +7,8 @@ export default defineConfig({
     port: 3001,
     proxy: {
         '/socket.io': {
-          target: 'https://geist-io.onrender.com',
-          // target: 'http://localhost:3000',
+          //target: 'https://geist-io.onrender.com',
+          target: 'http://localhost:3000',
           changeOrigin: true,
           ws: true,
         },
