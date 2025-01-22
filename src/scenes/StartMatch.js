@@ -23,8 +23,8 @@ export class StartMatch extends Scene {
     );
 
     // use io('https...') to commit for deploy, and io() for testing
-    // this.socket = io('https://geist-io.onrender.com/');
-    this.socket = io();
+    this.socket = io('https://geist-io.onrender.com/');
+    // this.socket = io();
 
     this.load.image('head1', 'assets/head1.png');
     this.load.image('head2', 'assets/head2.png');
