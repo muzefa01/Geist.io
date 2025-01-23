@@ -49,7 +49,7 @@ export class HowToPlay extends Scene {
         add.text(
           130,
           240,
-          "There is an imbalance in the spirit world.\n\nYou must select a spirit and do battle against your opponent.\n\nA spirit is randomly generated for you, click resummon to generate a new one.\n\nOnce you are satisfied with your spirit, share the match code or enter one to play.\n\nWhen in a game, you have can either attack or block your opponent.\n\nThe winner of the game is determined by your stats and timing.\n\n\n\nGood luck!",
+          "There is an imbalance in the spirit world.\n\nYou must select a team of spirit fighters and do battle against your opponent.\n\nA spirit is randomly generated for you, click resummon to generate a new one.\n\nEach round, take it in turns to select which spirits fight.\n\nThe spirit with the best stats wins.\n\nGood luck!",
           {
             fontFamily: "Cabin Sketch",
             fontSize: 15,
