@@ -126,6 +126,8 @@ io.on('connection', (socket) => {
         console.log("B")
         if (socket.id === games[i].plr[ games[i].firstChoice ]) { // if the sender is the acting player
           console.log("C")
+          console.log(chosenFighters)
+          console.log(games[i].fightersActive)
           if (games[i].fighterCheck(chosenFighters)) {
             // games[i].battle'em() - find & tally winner, set alreadyFoughts
             io.to(games[i].room).emit('firstBattle', chosenFighters)
@@ -140,7 +142,7 @@ io.on('connection', (socket) => {
     for (let i in games) {
       if (games[i].room === roomCode) {
         if (socket.id === games[i].plr[ games[i].secondChoice ]) { // if the sender is the acting player
-          if (games[i].fighterCheck(chosenFighters) && games[i.fighterCheck(games[i].others(chosenFighters))]) {
+          if (games[i].fighterCheck(chosenFighters) && games[i].fighterCheck(games[i].others(chosenFighters))) {
             io.to(games[i].room).emit('secondThirdBattles', chosenFighters, games[i].others(chosenFighters))
             // games[i].battle'em() twice
             // and they win

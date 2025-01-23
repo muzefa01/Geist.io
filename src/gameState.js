@@ -13,7 +13,7 @@ class GameState {
     this.ready = ['none', 'none']
     this.rerolls = [3, 3] // rerolls per player - shared between choosing spirits and upgrades
 
-    this.firstChoice = coin()? '1': '1'
+    this.firstChoice = coin()? '0': '1'
     this.secondChoice = ['1', '0'][this.firstChoice] 
     this.fightersActive = [[true, true, true], [true, true, true]]
   }
@@ -64,7 +64,7 @@ class GameState {
       armWidthRatio: -0.3 + (newSpirit.stats.def + newSpirit.stats.atk)*0.03, // ATK, DEF
 
       animSpeed: (newSpirit.stats.spd) * 0.08, // SPD
-      headType: 1 + rand(5 - 1)
+      headType: 1 + rand(6 - 1)
     }
     newSpirit.attributes.leanForward *= newSpirit.attributes.height / 150
 
@@ -72,10 +72,10 @@ class GameState {
   }
 
   fighterCheck(chosen) { // chosen is an array like [0, 1] or [2, 2]
-    return this.fightersActive[chosen[0]] && this.fightersActive[chosen[1]]
+    return this.fightersActive[0][chosen[0]] && this.fightersActive[1][chosen[1]]
   }
 
-  otherFighterCheck(chosen) {
+  others(chosen) {
     const others = [-1, -1]
     for (let i in this.fightersActive) {
       for (let j in others) {

@@ -40,9 +40,10 @@ export class StartMatch extends Scene {
     this.load.image("resummon", "/assets/geist-resummon.png");
     this.load.image("recruit", "/assets/geist-recruit.png");
     this.load.image("select", "/assets/geist-select-grey.png")
+    this.load.image("strike", "/assets/strike.png")
 
     this.load.image("stats", "/assets/geist-stats.png");
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 6; i++) {
       this.load.image(`head${i}`, `assets/head${i}.png`); }
     this.load.image("start-match", "assets/geiststartmatch.png");
     this.load.image("create-match", "assets/geist-create-match.png");
@@ -212,6 +213,8 @@ export class StartMatch extends Scene {
     this.selectorsP = []
     //this.selectorsAll = this.plrIndex === 0 ? [this.selectorsP, this.selectorsE] : [this.selectorsE, this.selectorsP]
     this.teamsReady = [[true, true, true], [true, true, true]]
+    this.nextFight = 1
+    this.wins = 0
 
     this.switchAlly = function(ind) {
       for (let i in this.selectorsP) {
@@ -294,36 +297,82 @@ export class StartMatch extends Scene {
         this.choiceCheck = function() {
           if ((this.chosen[0] !== null) && (this.chosen[1] !== null)) {
             console.log(this.chosen + " chosen, room " + room)
-            this.socket.emit('chooseMatchup1', room, this.chosen)
+            this.socket.emit('chooseMatchup' + this.nextFight, room, this.chosen)
           }
 
         }
       }
 
-      if (whoGoesFirst === this.plrIndex) {
-        this.showTT("Choose which spirit fights\nwhich enemy first.")
+      if (this.whoGoesFirst === this.plrIndex) {
+        this.showTT("     Choose which spirit fights\n     which enemy first.")
         this.showTeams(false, true)
       } else {
-        this.showTT("Waiting for enemy to\nchoose first fighters...")
+        this.showTT("     Waiting for enemy to\n     choose first fighters...")
         this.showTeams(false, false)
       }
     })
 
     this.socket.on('firstBattle', (firstFighters) => { // eg. array [2, 0], meaning firstTeam[2] fights secondTeam[0]
-      this.showTT("FIGHT 1")
+      this.showTT("ROUND 1")
       this.showTeams(true, false)
       this.switchAlly(-1)
+      this.nextFight = 2
+
+      this.teamsReady[0][firstFighters[0]] = false
+      this.teamsReady[1][firstFighters[1]] = false
 
       this.currentBattle = new BattleAnims(this, 
         [this.teams[this.plrIndex][firstFighters[this.plrIndex]], 
         this.teams[opp(this.plrIndex)][firstFighters[opp(this.plrIndex)]]], 
         (data) => {
+          this.showTT("ROUND 1 " + (data === "0" ? "VICTORY " : "DEFEAT"))
+          this.wins += opp(data) * 1
+          setTimeout(() => {this.setup2nd3rd()}, 1700)
       } )
     })
 
+    this.setup2nd3rd = function() {
+      this.chosen = [null, null]
+      if (this.whoGoesFirst !== this.plrIndex) {
+        this.showTT("     Choose which spirit fights\n     which enemy next.")
+        this.showTeams(false, true)
+      } else {
+        this.showTT("     Waiting for enemy to\n     choose next fighters...")
+        this.showTeams(false, false)
+      }
+    }
+
     this.socket.on('secondThirdBattles', (secondFighters, thirdFighters) => {
-      
+      this.thirdFighters = thirdFighters
+      this.showTT("ROUND 2")
+      this.showTeams(true, false)
+      this.switchAlly(-1)
+      this.nextFight = 3
+
+      this.currentBattle = new BattleAnims(this, 
+        [this.teams[this.plrIndex][secondFighters[this.plrIndex]], 
+        this.teams[opp(this.plrIndex)][secondFighters[opp(this.plrIndex)]]], 
+        (data) => {
+          this.showTT("ROUND 2 " + (data === "0" ? "VICTORY " : "DEFEAT"))
+          this.wins += opp(data) * 1
+          setTimeout(() => {this.trigger3rd()}, 1600)
+      } )
     })
+
+    this.trigger3rd = function() {
+      this.showTT("ROUND 3")
+      this.currentBattle = new BattleAnims(this, 
+        [this.teams[this.plrIndex][this.thirdFighters[this.plrIndex]], 
+        this.teams[opp(this.plrIndex)][this.thirdFighters[opp(this.plrIndex)]]], 
+        (data) => {
+          this.showTT("ROUND 3 " + (data === "0" ? "VICTORY " : "DEFEAT"))
+          this.wins += opp(data) * 1
+          setTimeout(() => {
+            this.showTT(`WON ${this.wins}/3 ROUNDS` + "\n" + `YOU ${this.wins>=2 ? "WIN" : "LOSE"}`)
+          }, 1600)
+      } )
+
+    }
     
     this.btnCreateRoom = this.add.image(412, 250, "create-match");
     this.buttonFormat(this.btnCreateRoom)
