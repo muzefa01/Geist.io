@@ -6,7 +6,7 @@ This group project was created in the final three weeks of a Software Developmen
 
 You can view the hosted application here: [Geist.io](https://geist-io.onrender.com).
 
-Our group, Zeitgeist, consists of six members: Syed Muzefa Abbas, arda caglar, Christopher Dobson, Muhammad Hasan, Brandon Hinds and Aaron Smith. We began by considering the Software Development Lifestyle (SDLC) of our app.
+Our group, Zeitgeist, consists of six members: Syed Muzefa Abbas, arda caglar, Christopher Dobson, Muhammad Hasan, Brandon Hinds and Aaron Smith. We began by considering the Software Development Life Cycle (SDLC) of our app.
 
 Throughout the project phase, we communicated with one another through Slack, Zoom, Discord and Google Docs. Every morning from 8.45-9.15AM, we held a stand-up session over video call, this involved updating each other on our progress since our last call. We also held round-down sessions every afternoon from 4.30-5PM.
 
