@@ -12,7 +12,7 @@ Throughout the project phase, we communicated with one another through Slack, Zo
 
 Each of us cloned [the same GitHub repository](https://github.com/muzefa01/Geist.io) to our local machines. We each created our own branches and created pull requests when we wanted to merge changes into the main branch. Clear communication ensured consistency between our code.
 
-The minimum viable product (MVP) we devised was an online multiplayer video game called Geist.io. This game sees two players choose a randomly generated spirit and do battle against one another.
+The minimum viable product (MVP) we devised was an online multiplayer video game called Geist.io. This game sees two players each choose a team of randomly generated spirits and do battle against one another.
 
 Among the dependencies we installed for this project are Express, Phaser and Socket.IO. Geist.io was hosted on [Render](https://geist-io.onrender.com/). If you would like to open Geist.io in your local host using Vite, you can do so with the following commands:
 
