@@ -4,6 +4,19 @@ import { CharBody } from './charBody.js'
 function opp(ind) {return ind*1 === 1 ? "0" : "1"}
 const rand = Math.random
 function fudge(k) {return (rand()-0.5)*k*2}
+function slideCall(target, origin, looseness, callback) {
+  let ticks = 22
+  const intId = setInterval(() => {
+    if (ticks > 0) {
+      ticks --
+      callback(origin)
+      origin = target + (origin - target)*looseness
+    } else {
+      callback(target)
+      clearInterval(intId)
+    }
+  }, 16);
+}
 
 class BattleAnims {
   constructor(owner, spirits, onComplete) { // spirits in [player, enemy] order
@@ -34,7 +47,7 @@ class BattleAnims {
     this.bodyCentres = []
     const sides = [-1, 1]
     for (let i in this.spirits) {
-      this.bodyCentres.push({x: centre.x + sides[i]*320, y: centre.y})
+      this.bodyCentres.push({x: centre.x + sides[i]*150, y: centre.y})
       this.spiritBodies.push(new CharBody(
         this.owner, 
         this.bodyCentres[i],
@@ -86,6 +99,12 @@ class BattleAnims {
     const dmg = Math.max(this.spirits[i].stats.atk - this.spirits[opp(i)].stats.def, 1)
     this.spiritHp[opp(i)] -= dmg
     this.updateBars()
+    slideCall(0, -0.8, 0.85, (a) => {
+      this.spiritBodies[i].atkAngle = a
+    })
+    slideCall(this.spiritBodies[i].basePos.x, this.spiritBodies[i].basePos.x-(4.5*(this.spirits[i].stats.atk - 7))*sides[i], 0.85, (a) => {
+      this.spiritBodies[i].basePos.x = a
+    })
     console.log(i +" ATTACKS, "+ opp(i) +" DOWN TO ["+ this.spiritHp[opp(i)] +"]")
     this.tickers[i] -= this.tickThreshold
     if (this.spiritHp[opp(i)] <= 0) {
