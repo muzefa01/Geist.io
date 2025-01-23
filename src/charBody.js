@@ -28,6 +28,7 @@ class CharBody {
     this.breathOffset = 0
     this.scale = {x: 1, y: 1} // scaling not implemented, this is just for H-flipping
     this.active = true
+    this.atkAngle = 0
     
      // tentatively declaring which stats affect each body attribute here
       this.height = attributes.height // HP, SPD
@@ -128,10 +129,10 @@ class CharBody {
       const shoulderX = this.armsCentre.x + (side[i]*(5 + this.neckWidth*0.2)) * this.scale.x
       this.arms[i].joints[0].setPos({x: shoulderX, y: this.armsCentre.y})
       this.arms[i].joints[1].setPos({
-        x: shoulderX + (Math.cos(this.armsAngle)*this.armLength*0.4) * this.scale.x, 
+        x: shoulderX + (Math.cos(this.armsAngle + (i == "1"? this.atkAngle : 0))*this.armLength*0.4) * this.scale.x, 
         y: this.armsCentre.y - Math.sin(this.armsAngle)*this.armLength*0.4})
       this.arms[i].joints[2].setPos({
-        x: this.arms[i].joints[1].posX + (Math.cos(this.armsAngle - PI/8)*this.armLength*0.6) * this.scale.x,
+        x: this.arms[i].joints[1].posX + (Math.cos(this.armsAngle + (i == "1"? this.atkAngle*0.5 : 0) - PI/8)*this.armLength*0.6) * this.scale.x,
         y: this.arms[i].joints[1].posY - Math.sin(this.armsAngle - PI/8)*this.armLength*0.6})
       this.arms[i].update()
     }

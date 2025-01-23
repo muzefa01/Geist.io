@@ -369,6 +369,8 @@ export class StartMatch extends Scene {
           this.wins += opp(data) * 1
           setTimeout(() => {
             this.showTT(`WON ${this.wins}/3 ROUNDS` + "\n" + `YOU ${this.wins>=2 ? "WIN" : "LOSE"}`)
+            logo.setVisible(true)
+            logo.setPosition(400, 300)
           }, 1600)
       } )
 
